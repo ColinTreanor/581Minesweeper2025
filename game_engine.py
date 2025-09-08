@@ -11,5 +11,8 @@ class BoardEngine:
         self.board.CreateBoard(mines)
         return
     
+    def Restart(self):
+        self.board.ResetBoard()
+    
     def GetBoardState(self):
         return self.board

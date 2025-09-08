@@ -23,22 +23,27 @@ class EventHandler:
                 position = pygame.mouse.get_pos()
 
                 if (leftMousePressed):
-                    for button in ButtonClass.TestButtonList: 
+                    for button in ButtonClass.ButtonList: 
                         if (button.mRect.collidepoint(position) and button.mOnState == game.GetBoardState().state):
-                            #TODO: implement button functionality
-                            print("Place holder for button click functionality")
-                            print(f"clicked: {button.mRect}")
+                            #TODO: implement other button functionality
+                            print(f"Button Type: {button.mButtonType}")
+                            match button.mButtonType:
+                                 case ButtonClass.ButtonTypes.WIN_RESTART_GAME:
+                                      game.Restart()
                             break
+
                     if (game.GetBoardState().state == GameState.PLAYING):
                          #TODO: implement functionality for clicking cell
                          print("Placeholder for left click functionality")
+
                 elif (rightMousePressed):
                     if (game.GetBoardState().state == GameState.PLAYING):
                          #TODO: implement functionality for clicking cell
                          print("Placeholder for right click functionality")
+
         if event.type == QUIT:
-            #end pygame
-            pygame.quit()
+            #end pygame 
+            pygame.quit() 
             #end python script
             sys.exit()
         return

@@ -16,6 +16,9 @@ def main():
     DISPLAYSURF.fill(WHITE)
     pygame.display.set_caption("Game")
 
+    #setup buttons
+    UIEngine.InitializeButtonList()
+
     #make our classes
     Game = BoardEngine()
     while True:     
