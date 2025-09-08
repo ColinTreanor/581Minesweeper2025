@@ -1,13 +1,7 @@
 from board import *
 import pygame
 import button as ButtonClass
-
-# temporary constant definition for some colors, not sure where this should go in the codebase
-START_BG_COLOR = (192,192,192)
-START_DARK_LINE_COLOR = (128, 128, 128)
-START_LIGHT_LINE_COLOR = (232, 232, 232)
-BLACK = (0,0,0)
-# button red = (225, 105, 105)
+from constants import *
 
 
 class UIEngine:

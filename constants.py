@@ -1,0 +1,16 @@
+# Predefined some colors
+BLUE  = (0, 0, 255)
+RED   = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+START_BG_COLOR = (192,192,192)
+START_DARK_LINE_COLOR = (128, 128, 128)
+START_LIGHT_LINE_COLOR = (232, 232, 232)
+BLACK = (0,0,0)
+BUTTON_RED = (225, 105, 105)
+ 
+# Screen information
+SCREEN_WIDTH = 400
+SCREEN_HEIGHT = 600
+
