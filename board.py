@@ -18,12 +18,19 @@ class Board:
     #will store mines, state, board list(s) and size
     board_size: int = 10
 
-    def __init__(self, mines : int):
-        self.mines: int = mines
+    def __init__(self):
+        self.ResetBoard()
+
+    def ResetBoard(self):
+        self.mines: int = 0
         self.state: GameState = GameState.START_SCREEN
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
         self.actual_board: list = [[BoardPiece.NO_MINE for _ in range(self.board_size)] for _ in range(self.board_size)]
-        self.GenerateBoard()
+
+    def CreateBoard(self, mines: int):
+        self.mines = mines
+        self.state = GameState.PLAYING
+        GenerateBoard()
 
     def GenerateBoard(self):
         #place mines in board

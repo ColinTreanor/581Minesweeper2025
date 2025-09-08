@@ -1,18 +1,9 @@
 import pygame, sys
 from pygame.locals import *
 from game_engine import BoardEngine
+from board import *
+import button as ButtonClass
 
-'''
-define the button rects here
-use the rects in event handler to determine event
-maybe make them a separate class to allow accessing with UI?
-button instances:
-- reset
-- start game
-- maybe up and down arrow (might be using arrow keys instead)
-'''
-
- 
 class EventHandler:
     #Thinking no member variables, just member functions to implement functionality
 
@@ -25,6 +16,26 @@ class EventHandler:
             - tell BoardEngine to register click if it is users turn (use bool to keep track of that)
         probably using a switch statement
         ''' 
+        if event.type == MOUSEBUTTONDOWN: 
+                #put in event handler
+                leftMousePressed = pygame.mouse.get_pressed()[0]
+                rightMousePressed = pygame.mouse.get_pressed()[2]
+                position = pygame.mouse.get_pos()
+
+                if (leftMousePressed):
+                    for button in ButtonClass.TestButtonList: 
+                        if (button.mRect.collidepoint(position) and button.mOnState == game.GetBoardState().state):
+                            #TODO: implement button functionality
+                            print("Place holder for button click functionality")
+                            print(f"clicked: {button.mRect}")
+                            break
+                    if (game.GetBoardState().state == GameState.PLAYING):
+                         #TODO: implement functionality for clicking cell
+                         print("Placeholder for left click functionality")
+                elif (rightMousePressed):
+                    if (game.GetBoardState().state == GameState.PLAYING):
+                         #TODO: implement functionality for clicking cell
+                         print("Placeholder for right click functionality")
         if event.type == QUIT:
             #end pygame
             pygame.quit()

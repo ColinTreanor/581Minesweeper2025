@@ -28,12 +28,11 @@ def main():
 
     #make our classes
     Game = BoardEngine()
-    UI = UIEngine()
     while True:     
         for event in pygame.event.get():              
             EventHandler.HandleEvent(event, Game)
 
-        UI.UpdateDisplay(DISPLAYSURF, Game.GetBoardState())
+        UIEngine.UpdateDisplay(DISPLAYSURF, Game.GetBoardState())
 
         #upload window / surface changes
         pygame.display.update()

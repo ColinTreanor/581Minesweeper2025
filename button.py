@@ -24,8 +24,10 @@ class ButtonInfo():
         self.mOnState = aOnState
     
 # template for how buttons would be initialized for list
-ButtonList = [
+TestButtonList = [
     ButtonInfo(ButtonTypes.MINE_SELECT_UP_ARROW, pygame.image.load("sprites/mine.png"), (100, 100), GameState.START_SCREEN ), 
     ButtonInfo(ButtonTypes.MINE_SELECT_DOWN_ARROW, pygame.image.load("sprites/mineClicked.png"), (300, 300), GameState.START_SCREEN ), 
     ButtonInfo(ButtonTypes.MINE_SELECT_START, pygame.image.load("sprites/mineFalse.png"), (200, 500), GameState.START_SCREEN ),
 ]
+
+#TODO: add list for actual buttons
