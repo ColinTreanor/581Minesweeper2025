@@ -28,8 +28,8 @@ class EventHandler:
                             #TODO: implement other button functionality
                             print(f"Button Type: {button.mButtonType}")
                             match button.mButtonType:
-                                 case ButtonClass.ButtonTypes.WIN_RESTART_GAME:
-                                      game.Restart()
+                                case ButtonClass.ButtonTypes.WIN_RESTART_GAME | ButtonClass.ButtonTypes.LOSE_RESTART_GAME:
+                                    game.Restart()
                             break
 
                     if (game.GetBoardState().state == GameState.PLAYING):

@@ -26,6 +26,18 @@ class UIEngine:
             ButtonClass.ButtonTypes.MINE_SELECT_START, start_img,
             (1/2 * SCREEN_WIDTH, 3/4 * SCREEN_HEIGHT), GameState.START_SCREEN
         ))
+
+        #lose screen restart
+        restart_img = pygame.Surface((200, 60))
+        restart_img.fill((200, 0, 0))
+        small_font = pygame.font.Font(None, 36)
+        label = small_font.render("RESTART", True, (255, 255, 255))
+        restart_img.blit(label, (40, 15))
+        ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
+            ButtonClass.ButtonTypes.LOSE_RESTART_GAME,
+            restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 100), GameState.LOSE_SCREEN
+        ))
+
         #win screen restart
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.WIN_RESTART_GAME, pygame.image.load("sprites/placeholder_restart.png"), 
@@ -97,7 +109,11 @@ class UIEngine:
         return
     
     def DisplayLoseScreen(surface : pygame.display):
-        #TODO: implement this function to display lose screen
+        surface.fill((0, 0, 0))
+        font = pygame.font.Font(None, 74)
+        text = font.render("You Lose!", True, (255, 0, 0))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 50))
+        surface.blit(text, text_rect)
         return
     
     def DisplayButtons(surface : pygame.display, gameState : GameState):
