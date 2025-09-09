@@ -73,14 +73,17 @@ class UIEngine:
 
         # draw border lines to make background look nicer
         line_width = 20
-        # weird math with coordinates, i think lines are drawn with x representing the left edge and y representing the middle of the edge ???
-        pygame.draw.line(surface, START_DARK_LINE_COLOR, (400-line_width//2,0), (400-line_width//2,600), line_width)
-        pygame.draw.line(surface, START_DARK_LINE_COLOR, (0, 600-line_width//2), (400,600-line_width//2), line_width)
-        pygame.draw.line(surface, START_LIGHT_LINE_COLOR, (0,0+line_width//2), (400+line_width,0+line_width//2), line_width)
-        pygame.draw.line(surface, START_LIGHT_LINE_COLOR, (0+line_width//2,0), (0+line_width//2,600+line_width), line_width)
-
-        # get header font
-        reg_font_path = "fonts/Handjet-Regular.ttf"
+        # weird math with coordinates, i think lines are drawn with x being the pos of the left edge and y being the pos of the middle of the edge ???
+        pygame.draw.line(surface, START_DARK_LINE_COLOR, (SCREEN_WIDTH-line_width//2,0), (SCREEN_WIDTH-line_width//2,SCREEN_HEIGHT), line_width)
+        pygame.draw.line(surface, START_DARK_LINE_COLOR, (0, SCREEN_HEIGHT-line_width//2), (SCREEN_WIDTH,SCREEN_HEIGHT-line_width//2), line_width)
+        pygame.draw.line(surface, START_LIGHT_LINE_COLOR, (0,0+line_width//2), (SCREEN_WIDTH+line_width,0+line_width//2), line_width)
+        pygame.draw.line(surface, START_LIGHT_LINE_COLOR, (0+line_width//2,0), (0+line_width//2,SCREEN_HEIGHT+line_width), line_width)
+        # # get bolded font
+        header_font_path = "fonts/Handjet-Bold.ttf"
+        header_size = 48
+        header_font = pygame.font.Font(header_font_path, header_size)
+        # get regular font
+        reg_font_path = "fonts/HandJet-Regular.ttf"
         reg_font_size = 32
         reg_font = pygame.font.Font(reg_font_path, reg_font_size)
         UIEngine._DrawText(surface, "Choose how many mines: ", reg_font, BLACK, 65, 150)
@@ -89,10 +92,26 @@ class UIEngine:
         minesweeper_title = pygame.image.load("./sprites/start_screen/minesweeper_title.png").convert_alpha()
         minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
         surface.blit(minesweeper_title, (50,35))
-
+        
+        # draw up and down arrows
+        up_arrow = pygame.image.load("./sprites/start_screen/up_arrow.png").convert_alpha()
+        down_arrow = pygame.image.load("./sprites/start_screen/down_arrow.png").convert_alpha()
+        up_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW, up_arrow, (300,250), GameState.START_SCREEN)
+        down_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_DOWN_ARROW, down_arrow, (300,305), GameState.START_SCREEN)
+        # append to test button list for now, uncertain of real implementation
+        ButtonClass.TestButtonList.append(up_button)
+        ButtonClass.TestButtonList.append(down_button)
+        # draw start button
+        start_img = pygame.image.load("./sprites/start_screen/start_button.png").convert_alpha()
+        start_img = pygame.transform.scale_by(start_img, 2) # scale by a factor of 2
+        start_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_START, start_img, (200,450), GameState.START_SCREEN)
+        ButtonClass.TestButtonList.append(start_button)
         # draw blank space for number of mines text to go
         pygame.draw.rect(surface, START_LIGHT_LINE_COLOR, pygame.Rect(150, 240, 100, 75))
         
+        num_of_mines = ...
+        # placeholder to draw number of mines
+        UIEngine._DrawText(surface, "10", header_font, BLACK, 175, 250)
         return
     
     def DisplayPlayingScreen(surface : pygame.display, boardState : Board):
