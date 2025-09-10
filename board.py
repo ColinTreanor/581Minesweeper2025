@@ -19,19 +19,20 @@ class Board:
     #will store mines, state, board list(s) and size
     board_size: int = 10
 
-    def __init__(self):
-        self.ResetBoard()
+    def __init__(self, mines):
+        self.ResetBoard(mines)
 
-    def ResetBoard(self):
-        self.mines: int = 0
+    def ResetBoard(self, mines):
+        self.mines: int = mines
         self.state: GameState = GameState.START_SCREEN
+        self.board_generated: bool = False
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
         self.actual_board: list = [[0 for _ in range(self.board_size)] for _ in range(self.board_size)]
 
-    def startGame(self, mines: int, startIdx: tuple):
-        self.mines = mines
+    def GenerateBoard(self, startIdx: tuple):
         self.state = GameState.PLAYING
-
+        self.board_generated = True
+        
         # generate board based on players first click
         mines_placed: int = 0
         while(mines_placed < 10):
@@ -81,7 +82,11 @@ class Board:
         self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.FLAG
 
     def RevealSpace(self, spaceIdx: tuple):
-        revealedSpace = self.actual_board[spaceIdx[0]][spaceIdx[1]]
+
+        if(not self.board_generated): #Generate underlying board on first move to ensure bomb isnt on selected tile. 
+            self.GenerateBoard(spaceIdx)
+
+        revealedSpace = self.actual_board[spaceIdx[0]][spaceIdx[1]] # underlying space that the user picked. ie mine empty or how many surrounding mines
 
         if(self.visible_board[spaceIdx[0]][spaceIdx[1]] != BoardPiece.UNKNOWN):
             return
@@ -91,8 +96,6 @@ class Board:
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] == BoardPiece.MINE
                 self.GameState = GameState.LOSE_SCREEN
                 return self.visible_board
-            case BoardPiece.FLAG:
-                return # Probably shouldnt allow the user to reveal their flags, dont want to let them misclick
             case 0:
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = 0
 
@@ -101,24 +104,17 @@ class Board:
                         self.RevealSpace((x, y))
 
 
-                # #left space
-                # self.RevealSpace((max(0, spaceIdx[0] - 1), spaceIdx[1]))
-
-                # #right space
-                # self.RevealSpace((min(spaceIdx[0] + 1, self.board_size - 1),  spaceIdx[1]))
-
-                # #up space
-                # self.RevealSpace((spaceIdx[0], max(0, spaceIdx[1] - 1)))
-
-                # #down space
-                # self.RevealSpace((spaceIdx[0], min(spaceIdx[1] + 1, self.board_size - 1)))
-
                 return self.visible_board
 
-            case _:
+            case _: # defualt case
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = revealedSpace
                 return self.visible_board
 
 
     def ReturnVisableBoard(self):
         return self.visible_board
+
+    def SetMines(self, mines: int):
+        self.mines = mines
+
+    def CheckWin
