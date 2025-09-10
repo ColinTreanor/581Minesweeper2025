@@ -19,11 +19,11 @@ class Board:
     #will store mines, state, board list(s) and size
     board_size: int = 10
 
-    def __init__(self, mines):
-        self.ResetBoard(mines)
+    def __init__(self):
+        self.ResetBoard()
 
-    def ResetBoard(self, mines):
-        self.mines: int = mines
+    def ResetBoard(self):
+        self.mines: int = 0
         self.state: GameState = GameState.START_SCREEN
         self.board_generated: bool = False
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
@@ -103,6 +103,9 @@ class Board:
                     for y in range(max(0, spaceIdx[1] - 1), min(spaceIdx[1] + 2, self.board_size)):
                         self.RevealSpace((x, y))
 
+                if(self.CheckWin()):
+                    self.state = GameState.WIN_SCREEN
+                    return self.visible_board
 
                 return self.visible_board
 
@@ -117,4 +120,10 @@ class Board:
     def SetMines(self, mines: int):
         self.mines = mines
 
-    def CheckWin
+    def IncrimentMines(self):
+        self.mines += 1
+
+    def DecramentMines(self):
+        self.mines -= 1
+
+    def CheckWin():
