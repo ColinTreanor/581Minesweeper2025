@@ -88,7 +88,7 @@ class Board:
                         text = font.render(str(cell['neighbor_mines']), True, BLACK)
                         text_rect = text.get_rect(center=rect.center)
                         screen.blit(text, text_rect)
-                else:
+                else: #if its an empty space
                     pygame.draw.rect(screen, DARK_GRAY, rect)
 
                 if cell['flagged']:
@@ -118,20 +118,20 @@ class Board:
             cell = self.actual_board[r][c]
             if not cell['revealed']:
                 cell['flagged'] = not cell['flagged']
+if __name__ == "__main__":
+    board = Board()
 
-board = Board()
+    # main loop to run it rn
+    running = True
+    while running:
+        screen.fill((255, 255, 255))
+        board.draw_board()
+        pygame.display.flip()
 
-# main loop to run it rn
-running = True
-while running:
-    screen.fill((255, 255, 255))
-    board.draw_board()
-    pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                board.handle_click(*event.pos, event.button)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            board.handle_click(*event.pos, event.button)
-
-pygame.quit()
+    pygame.quit()
