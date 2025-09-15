@@ -30,6 +30,16 @@ class EventHandler:
                             match button.mButtonType:
                                 case ButtonClass.ButtonTypes.WIN_RESTART_GAME | ButtonClass.ButtonTypes.LOSE_RESTART_GAME:
                                     game.Restart()
+                                case ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW:
+                                    # only update mines if it is less than max mines value
+                                    if game.board.mines < MAX_MINES:
+                                        game.board.IncrimentMines()
+                                case ButtonClass.ButtonTypes.MINE_SELECT_DOWN_ARROW:
+                                    # only update mines if there are more than min mines value
+                                    if game.board.mines > MIN_MINES:
+                                        game.board.DecramentMines()
+                                case ButtonClass.ButtonTypes.MINE_SELECT_START:
+                                    game.board.state = GameState.PLAYING
                             break
 
                     if (game.GetBoardState().state == GameState.PLAYING):

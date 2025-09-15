@@ -25,7 +25,7 @@ def main():
         for event in pygame.event.get():              
             EventHandler.HandleEvent(event, Game)
 
-        UIEngine.UpdateDisplay(DISPLAYSURF, Game.GetBoardState())
+        UIEngine.UpdateDisplay(DISPLAYSURF, Game)
 
         #upload window / surface changes
         pygame.display.update()

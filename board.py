@@ -1,5 +1,6 @@
 from enum import Enum
 import random
+from constants import MAX_MINES, MIN_MINES
 
 class BoardPiece(Enum):
     #enum class to represent spaces
@@ -23,7 +24,7 @@ class Board:
         self.ResetBoard()
 
     def ResetBoard(self):
-        self.mines: int = 0
+        self.mines: int = 10
         self.state: GameState = GameState.START_SCREEN
         self.board_generated: bool = False
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
@@ -35,7 +36,7 @@ class Board:
         
         # generate board based on players first click
         mines_placed: int = 0
-        while(mines_placed < 10):
+        while(mines_placed < self.mines):
             rand_x = random.randint(0, self.board_size - 1)
             rand_y = random.randint(0, self.board_size - 1)
             if (startIdx != (rand_x, rand_y) and self.actual_board[rand_x][rand_y] != BoardPiece.MINE):
@@ -123,7 +124,8 @@ class Board:
     def IncrimentMines(self):
         self.mines += 1
 
-    def DecramentMines(self):
+    def DecramentMines(self):    
         self.mines -= 1
 
     def CheckWin():
+        pass

@@ -54,9 +54,9 @@ class UIEngine:
             - display current board
         probably using switch statement to differentiate between
         '''
-        match boardState.state:
+        match boardState.board.state:
             case GameState.START_SCREEN:
-                UIEngine.DisplayStartScreen(surface)
+                UIEngine.DisplayStartScreen(surface, boardState)
             case GameState.PLAYING:
                 UIEngine.DisplayPlayingScreen(surface, boardState)
             case GameState.WIN_SCREEN:
@@ -64,10 +64,10 @@ class UIEngine:
             case GameState.LOSE_SCREEN:
                 UIEngine.DisplayLoseScreen(surface)
 
-        UIEngine.DisplayButtons(surface, boardState.state)
+        UIEngine.DisplayButtons(surface, boardState.board.state)
         return
     
-    def DisplayStartScreen(surface : pygame.display):
+    def DisplayStartScreen(surface : pygame.display, boardState : Board):
         # fill with background color
         surface.fill(START_BG_COLOR)
 
@@ -93,29 +93,30 @@ class UIEngine:
         minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
         surface.blit(minesweeper_title, (50,35))
         
-        # draw up and down arrows
-        up_arrow = pygame.image.load("./sprites/start_screen/up_arrow.png").convert_alpha()
-        down_arrow = pygame.image.load("./sprites/start_screen/down_arrow.png").convert_alpha()
-        up_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW, up_arrow, (300,250), GameState.START_SCREEN)
-        down_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_DOWN_ARROW, down_arrow, (300,305), GameState.START_SCREEN)
-        # append to test button list for now, uncertain of real implementation
-        ButtonClass.TestButtonList.append(up_button)
-        ButtonClass.TestButtonList.append(down_button)
-        # draw start button
-        start_img = pygame.image.load("./sprites/start_screen/start_button.png").convert_alpha()
-        start_img = pygame.transform.scale_by(start_img, 2) # scale by a factor of 2
-        start_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_START, start_img, (200,450), GameState.START_SCREEN)
-        ButtonClass.TestButtonList.append(start_button)
+        # # make up and down arrows
+        # up_arrow = pygame.image.load("./sprites/start_screen/up_arrow.png").convert_alpha()
+        # down_arrow = pygame.image.load("./sprites/start_screen/down_arrow.png").convert_alpha()
+        # up_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW, up_arrow, (300,250), GameState.START_SCREEN)
+        # down_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_DOWN_ARROW, down_arrow, (300,305), GameState.START_SCREEN)
+        # # append to test button list for now, uncertain of real implementation
+        # # ButtonClass.ButtonList.append(up_button)
+        # # ButtonClass.ButtonList.append(down_button)
+        # # make start button
+        # start_img = pygame.image.load("./sprites/start_screen/start_button.png").convert_alpha()
+        # start_img = pygame.transform.scale_by(start_img, 2) # scale by a factor of 2
+        # start_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_START, start_img, (200,450), GameState.START_SCREEN)
+        # # ButtonClass.ButtonList.append(start_button)
         # draw blank space for number of mines text to go
         pygame.draw.rect(surface, START_LIGHT_LINE_COLOR, pygame.Rect(150, 240, 100, 75))
         
-        num_of_mines = ...
-        # placeholder to draw number of mines
-        UIEngine._DrawText(surface, "10", header_font, BLACK, 175, 250)
+        num_of_mines = boardState.board.mines
+        # placeholder to draw number of mines 
+        UIEngine._DrawText(surface, str(num_of_mines), header_font, BLACK, 175, 250)
         return
     
     def DisplayPlayingScreen(surface : pygame.display, boardState : Board):
         #TODO: implement this function to display playing screen
+        surface.fill(BUTTON_RED)
         return
     
     def DisplayWinScreen(surface : pygame.display):
