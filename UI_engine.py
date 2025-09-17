@@ -4,6 +4,47 @@ import button as ButtonClass
 from constants import *
 from constants import emoji_play, emoji_lose
 
+class Particle:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.radius = random.randint(3, 6)
+        self.color = (255, 200, 50)
+        self.life = 40
+        self.vel = [random.uniform(-3, 3), random.uniform(-3, 3)]
+
+    def update(self):
+        self.x += self.vel[0]
+        self.y += self.vel[1]
+        self.life -= 1
+        fade = max(self.life * 6, 0)
+        r = min(255, fade)
+        g = max(0, fade - 150)
+        b = 0
+        self.color = (r, g, b)
+
+    def draw(self, screen):
+        if self.life > 0:
+            pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+
+def explosion_animation(screen, x, y):
+    particles = [Particle(x, y) for _ in range(50)]
+    clock = pygame.time.Clock()
+    running = True
+    while running:
+        screen.fill((0, 0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        for p in particles:
+            p.update()
+            p.draw(screen)
+        pygame.display.update()
+        clock.tick(30)
+        particles = [p for p in particles if p.life > 0]
+        if not particles:
+            running = False
+
 
 class UIEngine:
     #Thinking no member variables, just member functions to implement functionality
@@ -181,6 +222,7 @@ class UIEngine:
         return
     
     def DisplayLoseScreen(surface : pygame.display, time):
+        """
         surface.fill((0, 0, 0))
         surface.blit(emoji_lose, (surface.get_width()//2-25,50))
         font = pygame.font.Font(None, 74)
@@ -188,7 +230,31 @@ class UIEngine:
         text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 50))
         surface.blit(text, text_rect)
         return
-    
+        """
+        SCEEN_WIDTH, SCREEN_HEIGHT = surface.get_size()
+        explosion_animation(surface, SCEEN_WIDTH//2, SCREEN_HEIGHT//2)
+        font = pygame.font.Font(None, 74)
+        text = font.render("You Lose!", True, (255, 0, 0))
+        text_rect = text.get_rect(center=(SCEEN_WIDTH//2, SCREEN_HEIGHT/2 - 50))
+        restart_img = pygame.Surface((200, 60))
+        restart_img.fill((200, 0, 0))
+        small_font = pygame.font.Font(None, 36)
+        label = small_font.render("RESTART", True, (255, 255, 255))
+        restart_img.blit(label, (40, 15))
+        restart_button= ButtonClass.Button(SCREEN_WIDTH//2 , SCREEN_HEIGHT//2 + 100, restart_img)
+
+        running = True
+        while running:
+            surface.fill((0, 0, 0))
+            surface.bilit(text,text_rect)
+            if restart_button.draw(surface):
+                return "RESTART"
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            pygame.display.flip()
+        pygame.quit()
+
     def DisplayButtons(surface : pygame.display, gameState : GameState, time):
         for button in ButtonClass.ButtonList: 
             if (gameState == button.mOnState):
