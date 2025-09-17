@@ -203,11 +203,11 @@ class UIEngine:
         font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 24)
         big_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 56)
         mid_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 40)
-        minesweeper_title = pygame.image.load("./sprites/start_screen/minesweeper_title.png").convert_alpha()
-        minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
-        surface.blit(minesweeper_title, (10, (board.board_size * cell_size + 10)))
-        # title = big_font.render("Minesweeper", True, BLACK)
-        # surface.blit(title, (10, board.board_size * cell_size + 10))
+        #minesweeper_title = pygame.image.load("./sprites/start_screen/minesweeper_title.png").convert_alpha()
+        #minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
+        #surface.blit(minesweeper_title, (10, (board.board_size * cell_size + 10)))
+        title = big_font.render("Playing ...", True, BLACK)
+        surface.blit(title, (10, board.board_size * cell_size + 10))
         time_display = big_font.render(f"Time: {time}", True, BLACK)
         mine_display = mid_font.render(f"Flags left: {board.flags}", True, BLACK)
         surface.blit(time_display, (10, board.board_size * cell_size + 65))
@@ -231,6 +231,12 @@ class UIEngine:
                 else:
                     surface.blit(filled_square, rect)
                 pygame.draw.rect(surface, BLACK, rect, 1)
+                if (r == 0):
+                    chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'h']
+                    row = font.render(f"{chars[c]}", True, BLACK)
+                    surface.blit(row, (cell_size * c + 10, -1)) 
+            row = font.render(f"{r+1}", True, BLACK)
+            surface.blit(row, (-1, cell_size * r + 10)) 
         return
 
     def DisplayWinScreen(surface: pygame.display, board, time):
