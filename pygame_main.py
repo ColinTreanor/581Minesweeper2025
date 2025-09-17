@@ -26,7 +26,10 @@ def main():
             EventHandler.HandleEvent(event, Game)
 
         UIEngine.UpdateDisplay(DISPLAYSURF, Game)
-
+        '''uncomment to test displaying the game screen
+        time = 10
+        UIEngine.DisplayPlayingScreen(DISPLAYSURF, Game.GetBoardState(), time)
+        '''
         #upload window / surface changes
         pygame.display.update()
         #limit game speed to 60 FPS

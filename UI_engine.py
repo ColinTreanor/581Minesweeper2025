@@ -114,10 +114,57 @@ class UIEngine:
         UIEngine._DrawText(surface, str(num_of_mines), header_font, BLACK, 175, 250)
         return
     
-    def DisplayPlayingScreen(surface : pygame.display, boardState : Board):
-        #TODO: implement this function to display playing screen
-        surface.fill(BUTTON_RED)
-        return
+    def DisplayPlayingScreen(surface : pygame.display, boardState : Board, time): #have to update all things calling this to include time as a param
+        GRAY = (150, 150, 150) #we can probably make these global vars for the rest of the screens
+        RED   = (255, 0, 0)
+        BLACK = (0, 0, 0)
+        DARK_GRAY = (50, 50, 50)
+        WHITE = (255, 255, 255)
+
+        #creating the coords is a little bit of a mess sorry, when you blit its basically surface.blit(x value, y value)
+        cell_size = 40
+        font = pygame.font.SysFont(None, 24)
+        big_font = pygame.font.SysFont(None, 56)
+        title = big_font.render("Minesweeper 581", True, BLACK)
+        surface.blit(title, (10, boardState.board_size * cell_size + 10))
+        time_display = big_font.render(f"Time: {time}", True, BLACK)
+        surface.blit(time_display, (10, boardState.board_size * cell_size + 80))
+        #if x is at 10 its under timeer if its at 250 its right side aligned 
+        restart_rect = pygame.Rect(10, boardState.board_size * cell_size + 140, 140, 50)
+        #to keep them stacked im basically using the previous displayed x coord (10) and then previous y and adding random multiples of 10 until it looks good
+
+        pygame.draw.rect(surface, WHITE, restart_rect)
+        pygame.draw.rect(surface, BLACK, restart_rect, 2)
+
+        button_text = font.render("Restart", True, BLACK)
+        text_rect = button_text.get_rect(center=restart_rect.center)
+        surface.blit(button_text, text_rect)
+
+        for r in range(boardState.board_size):
+            for c in range(boardState.board_size):
+                visible_piece = boardState.visible_board[r][c]
+                actual_piece = boardState.actual_board[r][c]
+                rect = pygame.Rect(c * cell_size, r * cell_size, cell_size, cell_size)
+
+                if visible_piece != BoardPiece.UNKNOWN:
+                    pygame.draw.rect(surface, GRAY, rect)
+
+                    if actual_piece == BoardPiece.MINE:
+                        pygame.draw.rect(surface, RED, rect)
+                        #minesprite blit add mayhaps
+                    else:
+                        neighbor_mines = boardState.GetNeighborMineCount((r, c))
+                        if neighbor_mines > 0:
+                            text = font.render(str(neighbor_mines), True, BLACK)
+                            text_rect = text.get_rect(center=rect.center)
+                            surface.blit(text, text_rect)
+                            #this should work but i havent tested
+                            #if the neighbor has at least one mine it renders the string into text and then you can get rect to center the
+                            #text in the cell box and then blit it to display 
+                else:
+                    pygame.draw.rect(surface, DARK_GRAY, rect)
+                pygame.draw.rect(surface, BLACK, rect, 1)
+        return restart_rect #so whatever is detecting clicks can detect restart_rect being used
     
     def DisplayWinScreen(surface : pygame.display):
         WinFont = pygame.font.SysFont('Comic Sans MS', 80)
