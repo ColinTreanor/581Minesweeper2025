@@ -43,6 +43,7 @@ class Board:
 
     def ResetBoard(self):
         self.mines: int = 10
+        self.flags: int = 10
         self.state: GameState = GameState.START_SCREEN
         self.StartTime = 0
         self.board_generated: bool = False
@@ -107,8 +108,10 @@ class Board:
         r, c = spaceIdx
         if self.visible_board[r][c] == BoardPiece.FLAG:
             self.visible_board[r][c] = BoardPiece.UNKNOWN
+            self.flags += 1
         elif self.visible_board[r][c] == BoardPiece.UNKNOWN:
             self.visible_board[r][c] = BoardPiece.FLAG
+            self.flags -= 1
 
     def RevealSpace(self, spaceIdx: tuple):
         r, c = spaceIdx

@@ -103,7 +103,7 @@ class UIEngine:
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME,
             playing_restart_img,
-            (80, 550), GameState.PLAYING
+            (75, 570), GameState.PLAYING
         ))
         return
 
@@ -175,11 +175,14 @@ class UIEngine:
         #creating the coords is a little bit of a mess sorry, when you blit its basically surface.blit(x value, y value)
         cell_size = 40
         font = pygame.font.SysFont(None, 24)
-        big_font = pygame.font.SysFont(None, 56)
+        big_font = pygame.font.SysFont(None, 56)    
+        mid_font = pygame.font.SysFont(None, 40)
         title = big_font.render("Minesweeper", True, BLACK)
         surface.blit(title, (10, board.board_size * cell_size + 10))
-        time_display = big_font.render(f"Time: {time}", True, BLACK)
-        surface.blit(time_display, (10, board.board_size * cell_size + 80))
+        time_display = mid_font.render(f"Time: {time} second(s)", True, BLACK)
+        mine_display = mid_font.render(f"Flags left: {board.flags}", True, BLACK)
+        surface.blit(time_display, (10, board.board_size * cell_size + 60))
+        surface.blit(mine_display, (10, board.board_size * cell_size + 90))
 
         for r in range(board.board_size):
             for c in range(board.board_size):
