@@ -83,7 +83,15 @@ class Board:
         self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.FLAG
 
     def RevealSpace(self, spaceIdx: tuple):
+        r, c = spaceIdx
+        print(f"RevealSpace called with indices: row={r}, col={c}")
+        print(f"Board size: {self.board_size}, actual_board dimensions: {len(self.actual_board)} x {len(self.actual_board[0])}")
 
+        if not (0 <= r < self.board_size and 0 <= c < self.board_size):
+            print(f"Invalid indices: ({r}, {c}) - skipping")
+            return
+
+        revealedSpace = self.actual_board[r][c]
         if(not self.board_generated): #Generate underlying board on first move to ensure bomb isnt on selected tile. 
             self.GenerateBoard(spaceIdx)
 
@@ -93,6 +101,7 @@ class Board:
             return
 
         match revealedSpace:
+            
             case BoardPiece.MINE:
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] == BoardPiece.MINE
                 self.GameState = GameState.LOSE_SCREEN
@@ -104,10 +113,10 @@ class Board:
                     for y in range(max(0, spaceIdx[1] - 1), min(spaceIdx[1] + 2, self.board_size)):
                         self.RevealSpace((x, y))
 
-                if(self.CheckWin()):
+                '''if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN
                     return self.visible_board
-
+'''
                 return self.visible_board
 
             case _: # defualt case
