@@ -53,7 +53,11 @@ class Board:
     def CalculateDuration(self):
         if not self.board_generated:
             return 0
-        return (time.get_ticks() - self.StartTime) // 1000
+        elif self.state == GameState.PLAYING:
+            return (time.get_ticks() - self.StartTime) // 1000
+        else:
+            return self.StartTime // 1000 #used to store game time after win
+            
 
     def GenerateBoard(self, startIdx: tuple):
         self.state = GameState.PLAYING
@@ -147,6 +151,7 @@ class Board:
 
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN
+                    self.StartTime = time.get_ticks() - self.StartTime
                     return self.visible_board
 
                 return self.visible_board

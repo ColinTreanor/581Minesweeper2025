@@ -78,7 +78,7 @@ class UIEngine:
         restart_img.blit(label, (40, 15))
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.LOSE_RESTART_GAME,
-            restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 100), GameState.LOSE_SCREEN
+            restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 270), GameState.LOSE_SCREEN
         ))
 
         #win screen restart 
@@ -89,7 +89,7 @@ class UIEngine:
         win_restart_img.blit(win_label, (40, 15))
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.WIN_RESTART_GAME,
-            win_restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 100), GameState.WIN_SCREEN
+            win_restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 270), GameState.WIN_SCREEN
         ))
 
         #playing screen restart
@@ -107,6 +107,26 @@ class UIEngine:
         ))
         return
 
+    def DisplayEndGameBoard(surface : pygame.display, board : Board):
+        cell_size = 40
+        font = pygame.font.SysFont(None, 24)
+        for r in range(board.board_size):
+            for c in range(board.board_size):
+                actual_piece = board.actual_board[r][c]
+                rect = pygame.Rect(c * cell_size, r * cell_size, cell_size, cell_size)
+                pygame.draw.rect(surface, GRAY, rect)
+                if actual_piece == BoardPiece.MINE:
+                        pygame.draw.rect(surface, RED, rect)
+                        #minesprite blit add mayhaps
+                else:
+                    if actual_piece.value > 0:
+                        text = font.render(str(actual_piece.value), True, BLACK)
+                        text_rect = text.get_rect(center=rect.center)
+                        surface.blit(text, text_rect)
+                        #if it has at least one mine it renders the string into text and then you can get rect to center the
+                        #text in the cell box and then blit it to display 
+                pygame.draw.rect(surface, BLACK, rect, 1)
+
     def UpdateDisplay(surface : pygame.display, board : Board, time):
         '''
         will do one of the following:
@@ -122,11 +142,11 @@ class UIEngine:
             case GameState.PLAYING:
                 UIEngine.DisplayPlayingScreen(surface, board, time)
             case GameState.WIN_SCREEN:
-                UIEngine.DisplayWinScreen(surface, time)
+                UIEngine.DisplayWinScreen(surface, board, time)
             case GameState.LOSE_SCREEN:
-                UIEngine.DisplayLoseScreen(surface, time)
+                UIEngine.DisplayLoseScreen(surface, board, time)
 
-        UIEngine.DisplayButtons(surface, board.state, time)
+        UIEngine.DisplayButtons(surface, board.state)
         return
     
     def DisplayStartScreen(surface : pygame.display, board : Board, time):
@@ -214,29 +234,31 @@ class UIEngine:
                 pygame.draw.rect(surface, BLACK, rect, 1)
         return
     
-    def DisplayWinScreen(surface : pygame.display, time):
-        surface.fill((0, 0, 0))
-        WinFont = pygame.font.SysFont(None, 74)
+    def DisplayWinScreen(surface : pygame.display, board, time):
+        surface.fill(START_BG_COLOR)
+        UIEngine.DisplayEndGameBoard(surface, board)
+        WinFont = pygame.font.SysFont(None, 56)
         WinText = 'You WIN!'
         WinTextSurface = WinFont.render(WinText, False, GREEN)
         WinTextSize = WinFont.size(WinText)
         surface.blit(WinTextSurface, (SCREEN_WIDTH / 2 - WinTextSize[0] / 2, 
-                                      SCREEN_HEIGHT / 2 - WinTextSize[1] / 2))
+                                      SCREEN_HEIGHT / 2 + 150))
         return
     
-    def DisplayLoseScreen(surface : pygame.display, time):
+    def DisplayLoseScreen(surface : pygame.display, board, time):
         if not UIEngine.explosion_played:
             explosion_animation(surface, SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
             UIEngine.explosion_played = True
 
-        surface.fill((0, 0, 0))
-        font = pygame.font.Font(None, 74)
+        surface.fill(START_BG_COLOR)
+        UIEngine.DisplayEndGameBoard(surface, board);
+        font = pygame.font.Font(None, 56)
         text = font.render("You Lose!", True, RED)
-        text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 50))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2  + 150))
         surface.blit(text, text_rect)
         return
 
-    def DisplayButtons(surface : pygame.display, gameState : GameState, time):
+    def DisplayButtons(surface : pygame.display, gameState : GameState):
         for button in ButtonClass.ButtonList: 
             if (gameState == button.mOnState):
                 surface.blit(button.mImg, button.mRect)
