@@ -72,25 +72,25 @@ class UIEngine:
         ))
 
         # lose screen restart
-        restart_img = pygame.Surface((200, 60))
+        restart_img = pygame.Surface((200, 40))
         restart_img.fill((200, 0, 0))
         small_font = pygame.font.Font(None, 36)
         label = small_font.render("RESTART", True, WHITE)
-        restart_img.blit(label, (40, 15))
+        restart_img.blit(label, (40, 10))
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.LOSE_RESTART_GAME,
-            restart_img, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 270), GameState.LOSE_SCREEN
+            restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 275), GameState.LOSE_SCREEN
         ))
 
         # win screen restart
-        win_restart_img = pygame.Surface((200, 60))
+        win_restart_img = pygame.Surface((200, 40))
         win_restart_img.fill((0, 200, 0))
         small_font = pygame.font.Font(None, 36)
         win_label = small_font.render("RESTART", True, WHITE)
-        win_restart_img.blit(win_label, (40, 15))
+        win_restart_img.blit(win_label, (40, 10))
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.WIN_RESTART_GAME,
-            win_restart_img, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 270), GameState.WIN_SCREEN
+            win_restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 275), GameState.WIN_SCREEN
         ))
 
         # playing screen restart
@@ -240,20 +240,27 @@ class UIEngine:
         WinText = 'You WIN!'
         WinTextSurface = WinFont.render(WinText, False, GREEN)
         WinTextSize = WinFont.size(WinText)
-        surface.blit(WinTextSurface, (SCREEN_WIDTH / 2 - WinTextSize[0] / 2,
-                                      SCREEN_HEIGHT / 2 + 150))
+        mid_font = pygame.font.SysFont(None, 40)
+        time_display = mid_font.render(f"Time: {time} second(s)", True, BLACK)
+        time_size = mid_font.size(f"Time: {time} second(s)")
+        surface.blit(time_display, (SCREEN_WIDTH/2 - time_size[0] / 2, SCREEN_HEIGHT / 2 + 200))
+        surface.blit(WinTextSurface, (SCREEN_WIDTH / 2 - WinTextSize[0] / 2, SCREEN_HEIGHT / 2 + 200 - WinTextSize[0] / 2))
         return
-
-    def DisplayLoseScreen(surface: pygame.display, board, time):
+    
+    def DisplayLoseScreen(surface : pygame.display, board, time):
         if not UIEngine.explosion_played:
-            explosion_animation(surface, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+            explosion_animation(surface, SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
             UIEngine.explosion_played = True
 
         surface.fill(START_BG_COLOR)
         UIEngine.DisplayEndGameBoard(surface, board);
         font = pygame.font.Font(None, 56)
         text = font.render("You Lose!", True, RED)
-        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 150))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2  + 150))
+        mid_font = pygame.font.SysFont(None, 40)
+        time_display = mid_font.render(f"Time: {time} second(s)", True, BLACK)
+        time_size = mid_font.size(f"Time: {time} second(s)")
+        surface.blit(time_display, (SCREEN_WIDTH/2 - time_size[0] / 2, SCREEN_HEIGHT/2  + 200))
         surface.blit(text, text_rect)
         return
 

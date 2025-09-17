@@ -129,7 +129,7 @@ class Board:
         revealedSpace = self.actual_board[r][c]
         if(not self.board_generated): #Generate underlying board on first move to ensure bomb isnt on selected tile. 
             self.GenerateBoard(spaceIdx)
-            self.StartTime = time.get_ticks()
+            self.StartTime = time.get_ticks() 
 
         revealedSpace = self.actual_board[spaceIdx[0]][spaceIdx[1]] # underlying space that the user picked. ie mine empty or how many surrounding mines
 
@@ -140,6 +140,7 @@ class Board:
             
             case BoardPiece.MINE:
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE
+                self.StartTime = time.get_ticks() - self.StartTime
                 self.state = GameState.LOSE_SCREEN
                 return self.visible_board
             case BoardPiece.ZERO:
@@ -151,7 +152,7 @@ class Board:
 
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN
-                    self.StartTime = time.get_ticks() - self.StartTime
+                    self.StartTime = time.get_ticks() - self.StartTime 
                     return self.visible_board
 
                 return self.visible_board
@@ -161,6 +162,7 @@ class Board:
 
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN
+                    self.StartTime = time.get_ticks() - self.StartTime
                     return self.visible_board
 
                 return self.visible_board
