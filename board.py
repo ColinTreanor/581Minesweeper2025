@@ -173,12 +173,15 @@ class Board:
 
     def SetMines(self, mines: int):
         self.mines = mines
+        self.flags = mines
 
     def IncrimentMines(self):
         self.mines += 1
+        self.flags += 1
 
     def DecramentMines(self):    
         self.mines -= 1
+        self.flags -= 1
 
     def CheckWin(self):
         for x in range(0, self.board_size):
