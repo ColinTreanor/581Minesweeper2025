@@ -1,3 +1,4 @@
+import pygame
 # Predefined some colors
 BLUE  = (0, 0, 255)
 RED   = (255, 0, 0)
@@ -16,3 +17,9 @@ SCREEN_HEIGHT = 600
 
 MAX_MINES = 20
 MIN_MINES = 10
+
+emoji_play = pygame.image.load('sprites/playing.png')
+emoji_lose = pygame.image.load('sprites/lose.png')
+
+emoji_play = pygame.transform.scale(emoji_play, (60, 60))
+emoji_lose = pygame.transform.scale(emoji_lose, (60, 60))

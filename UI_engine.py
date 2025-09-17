@@ -2,10 +2,53 @@ from board import *
 import pygame
 import button as ButtonClass
 from constants import *
+from constants import emoji_play, emoji_lose
+
+class Particle:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.radius = random.randint(3, 6)
+        self.color = (255, 200, 50)
+        self.life = 40
+        self.vel = [random.uniform(-3, 3), random.uniform(-3, 3)]
+
+    def update(self):
+        self.x += self.vel[0]
+        self.y += self.vel[1]
+        self.life -= 1
+        fade = max(self.life * 6, 0)
+        r = min(255, fade)
+        g = max(0, fade - 150)
+        b = 0
+        self.color = (r, g, b)
+
+    def draw(self, screen):
+        if self.life > 0:
+            pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+
+def explosion_animation(screen, x, y):
+    particles = [Particle(x, y) for _ in range(50)]
+    clock = pygame.time.Clock()
+    running = True
+    while running:
+        screen.fill((0, 0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        for p in particles:
+            p.update()
+            p.draw(screen)
+        pygame.display.update()
+        clock.tick(30)
+        particles = [p for p in particles if p.life > 0]
+        if not particles:
+            running = False
 
 
 class UIEngine:
     #Thinking no member variables, just member functions to implement functionality
+    explosion_played = False
     def InitializeButtonList():
         #up arrow
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
@@ -129,6 +172,7 @@ class UIEngine:
         return
     
     def DisplayPlayingScreen(surface : pygame.display, board : Board, time): #have to update all things calling this to include time as a param
+        UIEngine.explosion_played = False
         surface.fill(START_BG_COLOR)
 
         GRAY = (150, 150, 150) #we can probably make these global vars for the rest of the screens
@@ -186,13 +230,17 @@ class UIEngine:
         return
     
     def DisplayLoseScreen(surface : pygame.display, time):
+        if not UIEngine.explosion_played:
+            explosion_animation(surface, SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
+            UIEngine.explosion_played = True
+
         surface.fill((0, 0, 0))
         font = pygame.font.Font(None, 74)
         text = font.render("You Lose!", True, (255, 0, 0))
         text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 50))
         surface.blit(text, text_rect)
         return
-    
+
     def DisplayButtons(surface : pygame.display, gameState : GameState, time):
         for button in ButtonClass.ButtonList: 
             if (gameState == button.mOnState):
