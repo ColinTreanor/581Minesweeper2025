@@ -47,8 +47,8 @@ def explosion_animation(screen, x, y):
 
 
 class UIEngine:
-    #Thinking no member variables, just member functions to implement functionality
     explosion_played = False
+    
     def InitializeButtonList():
         #up arrow
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
@@ -74,18 +74,23 @@ class UIEngine:
         restart_img = pygame.Surface((200, 60))
         restart_img.fill((200, 0, 0))
         small_font = pygame.font.Font(None, 36)
-        label = small_font.render("RESTART", True, (255, 255, 255))
+        label = small_font.render("RESTART", True, WHITE)
         restart_img.blit(label, (40, 15))
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.LOSE_RESTART_GAME,
             restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 100), GameState.LOSE_SCREEN
         ))
 
-        #win screen restart
+        #win screen restart 
+        win_restart_img = pygame.Surface((200, 60))
+        win_restart_img.fill((0, 200, 0))
+        small_font = pygame.font.Font(None, 36)
+        win_label = small_font.render("RESTART", True, WHITE)
+        win_restart_img.blit(win_label, (40, 15))
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
-            ButtonClass.ButtonTypes.WIN_RESTART_GAME, pygame.image.load("sprites/placeholder_restart.png"), 
-            (SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.75), GameState.WIN_SCREEN 
-        )) 
+            ButtonClass.ButtonTypes.WIN_RESTART_GAME,
+            win_restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 100), GameState.WIN_SCREEN
+        ))
 
         #playing screen restart
         playing_restart_img = pygame.Surface((140, 50))
@@ -150,20 +155,6 @@ class UIEngine:
         minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
         surface.blit(minesweeper_title, (50,35))
         
-        # # make up and down arrows
-        # up_arrow = pygame.image.load("./sprites/start_screen/up_arrow.png").convert_alpha()
-        # down_arrow = pygame.image.load("./sprites/start_screen/down_arrow.png").convert_alpha()
-        # up_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW, up_arrow, (300,250), GameState.START_SCREEN)
-        # down_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_DOWN_ARROW, down_arrow, (300,305), GameState.START_SCREEN)
-        # # append to test button list for now, uncertain of real implementation
-        # # ButtonClass.ButtonList.append(up_button)
-        # # ButtonClass.ButtonList.append(down_button)
-        # # make start button
-        # start_img = pygame.image.load("./sprites/start_screen/start_button.png").convert_alpha()
-        # start_img = pygame.transform.scale_by(start_img, 2) # scale by a factor of 2
-        # start_button = ButtonClass.ButtonInfo(ButtonClass.ButtonTypes.MINE_SELECT_START, start_img, (200,450), GameState.START_SCREEN)
-        # # ButtonClass.ButtonList.append(start_button)
-        # draw blank space for number of mines text to go
         pygame.draw.rect(surface, START_LIGHT_LINE_COLOR, pygame.Rect(150, 240, 100, 75))
         
         num_of_mines = board.mines
@@ -221,9 +212,10 @@ class UIEngine:
         return
     
     def DisplayWinScreen(surface : pygame.display, time):
-        WinFont = pygame.font.SysFont('Comic Sans MS', 80)
+        surface.fill((0, 0, 0))
+        WinFont = pygame.font.SysFont(None, 74)
         WinText = 'You WIN!'
-        WinTextSurface = WinFont.render(WinText, False, BLACK)
+        WinTextSurface = WinFont.render(WinText, False, GREEN)
         WinTextSize = WinFont.size(WinText)
         surface.blit(WinTextSurface, (SCREEN_WIDTH / 2 - WinTextSize[0] / 2, 
                                       SCREEN_HEIGHT / 2 - WinTextSize[1] / 2))
@@ -236,7 +228,7 @@ class UIEngine:
 
         surface.fill((0, 0, 0))
         font = pygame.font.Font(None, 74)
-        text = font.render("You Lose!", True, (255, 0, 0))
+        text = font.render("You Lose!", True, RED)
         text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 50))
         surface.blit(text, text_rect)
         return
