@@ -19,8 +19,23 @@ SCREEN_HEIGHT = 600
 MAX_MINES = 20
 MIN_MINES = 10
 
+CELL_SIZE = 40
+
+empty_square = pygame.image.load('sprites/empty_square.png')
+filled_square = pygame.image.load('sprites/filled_square.png')
+flag_img = pygame.image.load('sprites/flag.png')
+mine_img = pygame.image.load('sprites/mine.png')
+mine_clicked_img = pygame.image.load('sprites/mineClicked.png')
+mine_false_img = pygame.image.load('sprites/mineFalse.png')
+
 emoji_play = pygame.image.load('sprites/playing.png')
 emoji_lose = pygame.image.load('sprites/lose.png')
 
 emoji_play = pygame.transform.scale(emoji_play, (60, 60))
 emoji_lose = pygame.transform.scale(emoji_lose, (60, 60))
+empty_square = pygame.transform.scale(empty_square, (CELL_SIZE, CELL_SIZE))
+filled_square = pygame.transform.scale(filled_square, (CELL_SIZE, CELL_SIZE))
+flag_img = pygame.transform.scale(flag_img, (CELL_SIZE, CELL_SIZE))
+mine_img = pygame.transform.scale(mine_img, (CELL_SIZE, CELL_SIZE))
+mine_clicked_img = pygame.transform.scale(mine_clicked_img, (CELL_SIZE, CELL_SIZE))
+mine_false_img = pygame.transform.scale(mine_false_img, (CELL_SIZE, CELL_SIZE))

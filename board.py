@@ -139,7 +139,7 @@ class Board:
         match revealedSpace:
             
             case BoardPiece.MINE:
-                self.visible_board[spaceIdx[0]][spaceIdx[1]] == BoardPiece.MINE
+                self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE
                 self.state = GameState.LOSE_SCREEN
                 return self.visible_board
             case BoardPiece.ZERO:
