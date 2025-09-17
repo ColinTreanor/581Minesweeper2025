@@ -42,14 +42,23 @@ class EventHandler:
                                     game.board.state = GameState.PLAYING
                             break
 
-                    if (game.GetBoardState().state == GameState.PLAYING):
+                    if (game.GetBoardState().state == GameState.PLAYING): 
+                        #added rudimentery for clicking cell 
+                         x, y = pygame.mouse.get_pos()
+                         r = y // 40 #cell size - 40
+                         c = x // 40 
+                         game.board.RevealSpace((r, c))
                          #TODO: implement functionality for clicking cell
-                         print("Placeholder for left click functionality")
+                        # print("Placeholder for left click functionality")
 
                 elif (rightMousePressed):
                     if (game.GetBoardState().state == GameState.PLAYING):
+                         x, y = pygame.mouse.get_pos()
+                         r = y // 40 #cell size - 40
+                         c = x // 40 
+                         game.board.PlaceFlag((r, c))
                          #TODO: implement functionality for clicking cell
-                         print("Placeholder for right click functionality")
+                       #  print("Placeholder for right click functionality")
 
         if event.type == QUIT:
             #end pygame 

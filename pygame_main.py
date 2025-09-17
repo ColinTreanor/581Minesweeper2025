@@ -22,14 +22,11 @@ def main():
     #make our classes
     Game = BoardEngine()
     while True:     
-        for event in pygame.event.get():              
+        for event in pygame.event.get():
             EventHandler.HandleEvent(event, Game)
 
-        UIEngine.UpdateDisplay(DISPLAYSURF, Game)
-        '''uncomment to test displaying the game screen
-        time = 10
-        UIEngine.DisplayPlayingScreen(DISPLAYSURF, Game.GetBoardState(), time)
-        '''
+        UIEngine.UpdateDisplay(DISPLAYSURF, Game, time=None) #need time calculation
+        
         #upload window / surface changes
         pygame.display.update()
         #limit game speed to 60 FPS
