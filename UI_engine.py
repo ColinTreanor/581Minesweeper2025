@@ -2,6 +2,7 @@ from board import *
 import pygame
 import button as ButtonClass
 from constants import *
+from constants import emoji_play, emoji_lose
 
 
 class UIEngine:
@@ -116,6 +117,7 @@ class UIEngine:
     
     def DisplayPlayingScreen(surface : pygame.display, boardState : Board, time): #have to update all things calling this to include time as a param
         surface.fill(START_BG_COLOR)
+        surface.blit(emoji_play, (surface.get_width()//2-25,50))
 
         GRAY = (150, 150, 150) #we can probably make these global vars for the rest of the screens
         RED   = (255, 0, 0)
@@ -177,6 +179,7 @@ class UIEngine:
     
     def DisplayLoseScreen(surface : pygame.display, time):
         surface.fill((0, 0, 0))
+        surface.blit(emoji_lose, (surface.get_width()//2-25,50))
         font = pygame.font.Font(None, 74)
         text = font.render("You Lose!", True, (255, 0, 0))
         text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2 - 50))
