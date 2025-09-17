@@ -117,7 +117,6 @@ class UIEngine:
     
     def DisplayPlayingScreen(surface : pygame.display, boardState : Board, time): #have to update all things calling this to include time as a param
         surface.fill(START_BG_COLOR)
-        surface.blit(emoji_play, (surface.get_width()//2-25,50))
 
         GRAY = (150, 150, 150) #we can probably make these global vars for the rest of the screens
         RED   = (255, 0, 0)
@@ -143,6 +142,10 @@ class UIEngine:
         button_text = font.render("Restart", True, BLACK)
         text_rect = button_text.get_rect(center=restart_rect.center)
         surface.blit(button_text, text_rect)
+
+        emoji_rect= emoji_play.get_rect()
+        emoji_rect.midleft = (restart_rect.right + 20, restart_rect.centery)
+        surface.blit(emoji_play, emoji_rect)
 
         for r in range(boardState.board.board_size):
             for c in range(boardState.board.board_size):
