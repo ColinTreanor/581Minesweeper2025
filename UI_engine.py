@@ -43,9 +43,23 @@ class UIEngine:
             ButtonClass.ButtonTypes.WIN_RESTART_GAME, pygame.image.load("sprites/placeholder_restart.png"), 
             (SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.75), GameState.WIN_SCREEN 
         )) 
+
+        #playing screen restart
+        playing_restart_img = pygame.Surface((140, 50))
+        playing_restart_img.fill((255, 255, 255))
+        pygame.draw.rect(playing_restart_img, (0, 0, 0), playing_restart_img.get_rect(), 2)
+        restart_font = pygame.font.SysFont(None, 24)
+        restart_label = restart_font.render("Restart", True, (0, 0, 0))
+        restart_text_rect = restart_label.get_rect(center=(70, 25))
+        playing_restart_img.blit(restart_label, restart_text_rect)
+        ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
+            ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME,
+            playing_restart_img,
+            (80, 550), GameState.PLAYING
+        ))
         return
 
-    def UpdateDisplay(surface : pygame.display, boardState : Board, time):
+    def UpdateDisplay(surface : pygame.display, board : Board, time):
         '''
         will do one of the following:
             - display start screen
@@ -54,20 +68,20 @@ class UIEngine:
             - display current board
         probably using switch statement to differentiate between
         '''
-        match boardState.board.state:
+        match board.state:
             case GameState.START_SCREEN:
-                UIEngine.DisplayStartScreen(surface, boardState, time)
+                UIEngine.DisplayStartScreen(surface, board, time)
             case GameState.PLAYING:
-                UIEngine.DisplayPlayingScreen(surface, boardState, time)
+                UIEngine.DisplayPlayingScreen(surface, board, time)
             case GameState.WIN_SCREEN:
                 UIEngine.DisplayWinScreen(surface, time)
             case GameState.LOSE_SCREEN:
                 UIEngine.DisplayLoseScreen(surface, time)
 
-        UIEngine.DisplayButtons(surface, boardState.board.state, time)
+        UIEngine.DisplayButtons(surface, board.state, time)
         return
     
-    def DisplayStartScreen(surface : pygame.display, boardState : Board, time):
+    def DisplayStartScreen(surface : pygame.display, board : Board, time):
         # fill with background color
         surface.fill(START_BG_COLOR)
 
@@ -83,7 +97,7 @@ class UIEngine:
         header_size = 48
         header_font = pygame.font.Font(header_font_path, header_size)
         # get regular font
-        reg_font_path = "fonts/HandJet-Regular.ttf"
+        reg_font_path = "fonts/Handjet-Regular.ttf"
         reg_font_size = 32
         reg_font = pygame.font.Font(reg_font_path, reg_font_size)
         UIEngine._DrawText(surface, "Choose how many mines: ", reg_font, BLACK, 65, 150)
@@ -109,12 +123,12 @@ class UIEngine:
         # draw blank space for number of mines text to go
         pygame.draw.rect(surface, START_LIGHT_LINE_COLOR, pygame.Rect(150, 240, 100, 75))
         
-        num_of_mines = boardState.board.mines
+        num_of_mines = board.mines
         # placeholder to draw number of mines 
         UIEngine._DrawText(surface, str(num_of_mines), header_font, BLACK, 175, 250)
         return
     
-    def DisplayPlayingScreen(surface : pygame.display, boardState : Board, time): #have to update all things calling this to include time as a param
+    def DisplayPlayingScreen(surface : pygame.display, board : Board, time): #have to update all things calling this to include time as a param
         surface.fill(START_BG_COLOR)
 
         GRAY = (150, 150, 150) #we can probably make these global vars for the rest of the screens
@@ -127,36 +141,32 @@ class UIEngine:
         cell_size = 40
         font = pygame.font.SysFont(None, 24)
         big_font = pygame.font.SysFont(None, 56)
-        title = big_font.render("Minesweeper 581", True, BLACK)
-        surface.blit(title, (10, boardState.board.board_size * cell_size + 10))
+        title = big_font.render("Minesweeper", True, BLACK)
+        surface.blit(title, (10, board.board_size * cell_size + 10))
         time_display = big_font.render(f"Time: {time}", True, BLACK)
-        surface.blit(time_display, (10, boardState.board.board_size * cell_size + 80))
-        #if x is at 10 its under timeer if its at 250 its right side aligned 
-        restart_rect = pygame.Rect(10, boardState.board.board_size * cell_size + 140, 140, 50)
-        #to keep them stacked im basically using the previous displayed x coord (10) and then previous y and adding random multiples of 10 until it looks good
+        surface.blit(time_display, (10, board.board_size * cell_size + 80))
 
-        pygame.draw.rect(surface, WHITE, restart_rect)
-        pygame.draw.rect(surface, BLACK, restart_rect, 2)
-
-        button_text = font.render("Restart", True, BLACK)
-        text_rect = button_text.get_rect(center=restart_rect.center)
-        surface.blit(button_text, text_rect)
-
-        for r in range(boardState.board.board_size):
-            for c in range(boardState.board.board_size):
-                visible_piece = boardState.board.visible_board[r][c]
-                actual_piece = boardState.board.actual_board[r][c]
+        for r in range(board.board_size):
+            for c in range(board.board_size):
+                visible_piece = board.visible_board[r][c]
+                actual_piece = board.actual_board[r][c]
                 rect = pygame.Rect(c * cell_size, r * cell_size, cell_size, cell_size)
 
-                if visible_piece != BoardPiece.UNKNOWN:
+                if visible_piece == BoardPiece.FLAG:
+                    # Draw the unrevealed square (dark gray)
+                    pygame.draw.rect(surface, DARK_GRAY, rect)
+                    # Draw red dot for flag
+                    flag_center = (rect.centerx, rect.centery)
+                    pygame.draw.circle(surface, RED, flag_center, 8)
+                elif visible_piece != BoardPiece.UNKNOWN:
                     pygame.draw.rect(surface, GRAY, rect)
 
                     if actual_piece == BoardPiece.MINE:
                         pygame.draw.rect(surface, RED, rect)
                         #minesprite blit add mayhaps
                     else:
-                        if actual_piece > 0:
-                            text = font.render(str(actual_piece), True, BLACK)
+                        if actual_piece.value > 0:
+                            text = font.render(str(actual_piece.value), True, BLACK)
                             text_rect = text.get_rect(center=rect.center)
                             surface.blit(text, text_rect)
                             #if it has at least one mine it renders the string into text and then you can get rect to center the
@@ -164,7 +174,7 @@ class UIEngine:
                 else:
                     pygame.draw.rect(surface, DARK_GRAY, rect)
                 pygame.draw.rect(surface, BLACK, rect, 1)
-        return restart_rect #so whatever is detecting clicks can detect restart_rect being used
+        return
     
     def DisplayWinScreen(surface : pygame.display, time):
         WinFont = pygame.font.SysFont('Comic Sans MS', 80)

@@ -20,12 +20,13 @@ def main():
     UIEngine.InitializeButtonList()
 
     #make our classes
-    Game = BoardEngine()
+    Game = Board()
+
     while True:     
         for event in pygame.event.get():
             EventHandler.HandleEvent(event, Game)
 
-        UIEngine.UpdateDisplay(DISPLAYSURF, Game, time=None) #need time calculation
+        UIEngine.UpdateDisplay(DISPLAYSURF, Game, time=Game.CalculateDuration()) #need time calculation
         
         #upload window / surface changes
         pygame.display.update()
