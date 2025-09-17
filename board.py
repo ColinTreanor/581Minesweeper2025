@@ -186,7 +186,7 @@ class Board:
     def CheckWin(self):
         for x in range(0, self.board_size):
             for y in range(0, self.board_size):
-                if(self.actual_board[x][y] != BoardPiece.MINE and self.visible_board[x][y] == BoardPiece.UNKNOWN):
+                if(self.actual_board[x][y] != BoardPiece.MINE and (self.visible_board[x][y] == BoardPiece.UNKNOWN or self.visible_board[x][y] == BoardPiece.FLAG)):
                     return False
                 
         return True
