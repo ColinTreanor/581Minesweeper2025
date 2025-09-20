@@ -1,30 +1,30 @@
 from enum import Enum
-import pygame
-import sys
-import button
-
-pygame.init()
-
-WIDTH, HEIGHT = 600, 600
-ROWS, COLS = 10, 10
-CELL_SIZE = WIDTH // COLS
-
-GRAY = (189, 189, 189)
-DARK_GRAY = (99, 99, 99)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Minesweeper")
-font = pygame.font.SysFont(None, 24)
+import random
+from constants import MAX_MINES, MIN_MINES
+from pygame import time
 
 class BoardPiece(Enum):
-    #just enum class to represent pieces
-    NO_MINE = 1
-    MINE = 2
-    FLAG = 3
-    UNKNOWN = 4
+    #enum class to represent spaces
+    MINE = 'M'
+    FLAG = 'F'
+    UNKNOWN = 'U'
+    ZERO = 0
+    ONE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
+    SIX = 6
+    SEVEN = 7
+    EIGHT = 8
+
+    def increment(self):
+        if isinstance(self.value, int) and self.value < 8:
+            next_value = self.value + 1
+            return BoardPiece(next_value)
+        
+        return self
+
 
 class GameState(Enum):
     #just enum class to represent states
@@ -32,6 +32,7 @@ class GameState(Enum):
     PLAYING = 2
     WIN_SCREEN = 3
     LOSE_SCREEN = 4
+
 
 class Board:
     #will store mines, state, board list(s) and size
@@ -41,97 +42,151 @@ class Board:
         self.ResetBoard()
 
     def ResetBoard(self):
-        self.mines: int = 0
+        self.mines: int = 10
+        self.flags: int = 10
         self.state: GameState = GameState.START_SCREEN
-        self.actual_board = self.create_board()
+        self.StartTime = 0
+        self.board_generated: bool = False
+        self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
+        self.actual_board: list = [[BoardPiece.ZERO for _ in range(self.board_size)] for _ in range(self.board_size)]
 
-    # datastructure of each board coordinate
-    # board[r][c] = {'mine': bool, 'neighbor_mines': int, 'revealed': bool, 'flagged': bool }
-    # each board[r][c] contains if its a mine, how many neighboring mines, if its been flagged by a player
-    # and if its been revealed on the board... lets use this as the data structure pls pls pls 
+    def CalculateDuration(self):
+        if not self.board_generated:
+            return 0
+        elif self.state == GameState.PLAYING:
+            return (time.get_ticks() - self.StartTime) // 1000
+        else:
+            return self.StartTime // 1000 #used to store game time after win
+            
 
-    def create_board(self):
-        board = []
-        for r in range(self.board_size):
-            row = []
-            for c in range(self.board_size):
-                row.append({'mine': False, 'neighbor_mines': 0, 'revealed': False, 'flagged': False})
-                #adds the data structure to each coord in the 10x10 grid 
-            board.append(row)
-        return board
+    def GenerateBoard(self, startIdx: tuple):
+        self.state = GameState.PLAYING
+        self.board_generated = True
+        
+        # generate board based on players first click
+        mines_placed: int = 0
+        while(mines_placed < self.mines):
+            rand_x = random.randint(0, self.board_size - 1)
+            rand_y = random.randint(0, self.board_size - 1)
+            if (startIdx != (rand_x, rand_y) and self.actual_board[rand_x][rand_y] != BoardPiece.MINE):
+                self.actual_board[rand_x][rand_y] = BoardPiece.MINE
+                mines_placed += 1 
+            
 
-    def PlaceMines(self):
-        #place mines in board
-        return
-    
-    def countNeighbors(self):
-        #counts how many neightboring mines are around it
-        return
+                for x in range(max(0, rand_x - 1), min(rand_x + 2, self.board_size)):
+                    for y in range(max(0, rand_y - 1), min(rand_y + 2, self.board_size)):
 
-    def draw_board(self):
-        #mine_sprite = None
-        #mine_explode_sprite = None
+                        if(self.actual_board[x][y] != BoardPiece.MINE):
+                            self.actual_board[x][y] = self.actual_board[x][y].increment()
+                        
 
-        for r in range(self.board_size):
-            for c in range(self.board_size):
-                cell = self.actual_board[r][c]
-                rect = pygame.Rect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+    def GetValue(self, spaceIdx: tuple):
+        #return if it is mine, flag, or value
+        return self.actual_board[spaceIdx[0]][spaceIdx[1]]
 
-                if cell['revealed']:
-                    pygame.draw.rect(screen, GRAY, rect)
-                    if cell['mine']:
-                        pygame.draw.rect(screen, RED, rect)
-                        #todo create stuff linking the mine sprite to mine cell
-                        #screen.blit(mine_sprite, rect.center) along these lines? right now using draw
-                        pygame.draw.circle(screen, BLACK, rect.center, CELL_SIZE // 4)
-                    elif cell['neighbor_mines'] > 0:
-                        text = font.render(str(cell['neighbor_mines']), True, BLACK)
-                        text_rect = text.get_rect(center=rect.center)
-                        screen.blit(text, text_rect)
-                else: #if its an empty space
-                    pygame.draw.rect(screen, DARK_GRAY, rect)
+    def PrintActualBoard(self):
+        # print board for debug
+        for x in range(self.board_size):
+            for y in range(self.board_size):
+                if(self.actual_board[x][y] == BoardPiece.MINE):
+                    print('M', end =' ')
+                    continue
+                print(self.actual_board[x][y].value, end=' ')
+            print()
 
-                if cell['flagged']:
-                    #later update with the actual flag sprite, right now text will suffice
-                    pygame.draw.circle(screen, RED, rect.center, CELL_SIZE // 4)
+    def PrintVisibleBoard(self):
+        for x in range(self.board_size):
+            for y in range(self.board_size):
+                if(self.visible_board[x][y] == BoardPiece.UNKNOWN):
+                    print('U', end = ' ')
+                    continue
+                if(self.visible_board[x][y] == BoardPiece.FLAG):
+                    print('F', end = ' ')
+                    continue
+                else: 
+                    print(self.visible_board[x][y].value, end = ' ')
 
-                pygame.draw.rect(screen, BLACK, rect, 1) #boarder
+            print()
 
-    def reveal_cell(self, r, c):
-        cell = self.actual_board[r][c]
-        if self.actual_board[r][c]['revealed'] or self.actual_board[r][c]['flagged']:
+    def PlaceFlag(self, spaceIdx: tuple):
+        r, c = spaceIdx
+        if self.visible_board[r][c] == BoardPiece.FLAG:
+            self.visible_board[r][c] = BoardPiece.UNKNOWN
+            self.flags += 1
+        elif self.visible_board[r][c] == BoardPiece.UNKNOWN:
+            self.visible_board[r][c] = BoardPiece.FLAG
+            self.flags -= 1
+
+    def RevealSpace(self, spaceIdx: tuple):
+        r, c = spaceIdx
+        print(f"RevealSpace called with indices: row={r}, col={c}")
+        print(f"Board size: {self.board_size}, actual_board dimensions: {len(self.actual_board)} x {len(self.actual_board[0])}")
+
+        if not (0 <= r < self.board_size and 0 <= c < self.board_size):
+            print(f"Invalid indices: ({r}, {c}) - skipping")
             return
-        self.actual_board[r][c]['revealed'] = True
-    
-        if cell['mine']:
-            # If a mine is clicked → set game to lose state
-            self.state = GameState.LOSE_SCREEN
 
-    def handle_click(self, x, y, button):
-        # until theres actual functionaility in the event handler
-        r = y // CELL_SIZE
-        c = x // CELL_SIZE
+        revealedSpace = self.actual_board[r][c]
+        if(not self.board_generated): #Generate underlying board on first move to ensure bomb isnt on selected tile. 
+            self.GenerateBoard(spaceIdx)
+            self.StartTime = time.get_ticks() 
 
-        if button == 1:  #left click
-            self.reveal_cell(r, c)
-        elif button == 3:  #right click
-            cell = self.actual_board[r][c]
-            if not cell['revealed']:
-                cell['flagged'] = not cell['flagged']
-if __name__ == "__main__":
-    board = Board()
+        revealedSpace = self.actual_board[spaceIdx[0]][spaceIdx[1]] # underlying space that the user picked. ie mine empty or how many surrounding mines
 
-    # main loop to run it rn
-    running = True
-    while running:
-        screen.fill((255, 255, 255))
-        board.draw_board()
-        pygame.display.flip()
+        if(self.visible_board[spaceIdx[0]][spaceIdx[1]] != BoardPiece.UNKNOWN):
+            return
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                board.handle_click(*event.pos, event.button)
+        match revealedSpace:
+            
+            case BoardPiece.MINE:
+                self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE
+                self.StartTime = time.get_ticks() - self.StartTime
+                self.state = GameState.LOSE_SCREEN
+                return self.visible_board
+            case BoardPiece.ZERO:
+                self.visible_board[spaceIdx[0]][spaceIdx[1]] = 0
 
-    pygame.quit()
+                for x in range(max(0, spaceIdx[0] - 1), min(spaceIdx[0] + 2, self.board_size)):
+                    for y in range(max(0, spaceIdx[1] - 1), min(spaceIdx[1] + 2, self.board_size)):
+                        self.RevealSpace((x, y))
+
+                if(self.CheckWin()):
+                    self.state = GameState.WIN_SCREEN
+                    self.StartTime = time.get_ticks() - self.StartTime 
+                    return self.visible_board
+
+                return self.visible_board
+
+            case _: # defualt case
+                self.visible_board[spaceIdx[0]][spaceIdx[1]] = revealedSpace
+
+                if(self.CheckWin()):
+                    self.state = GameState.WIN_SCREEN
+                    self.StartTime = time.get_ticks() - self.StartTime
+                    return self.visible_board
+
+                return self.visible_board
+
+
+    def ReturnVisableBoard(self):
+        return self.visible_board
+
+    def SetMines(self, mines: int):
+        self.mines = mines
+        self.flags = mines
+
+    def IncrimentMines(self):
+        self.mines += 1
+        self.flags += 1
+
+    def DecramentMines(self):    
+        self.mines -= 1
+        self.flags -= 1
+
+    def CheckWin(self):
+        for x in range(0, self.board_size):
+            for y in range(0, self.board_size):
+                if(self.actual_board[x][y] != BoardPiece.MINE and (self.visible_board[x][y] == BoardPiece.UNKNOWN or self.visible_board[x][y] == BoardPiece.FLAG)):
+                    return False
+                
+        return True

@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from board import GameState
 from enum import Enum
+from UI_engine import UIEngine
 
 class ButtonTypes(Enum):
     #just enum class to represent pieces
@@ -22,12 +23,6 @@ class ButtonInfo():
         self.mRect.center = aCenter
         #used for checking if button should be displayed / considered as valid
         self.mOnState = aOnState
-    
-# template for how buttons would be initialized for list
-TestButtonList = [
-    ButtonInfo(ButtonTypes.MINE_SELECT_UP_ARROW, pygame.image.load("sprites/mine.png"), (100, 100), GameState.START_SCREEN ), 
-    ButtonInfo(ButtonTypes.MINE_SELECT_DOWN_ARROW, pygame.image.load("sprites/mineClicked.png"), (300, 300), GameState.START_SCREEN ), 
-    ButtonInfo(ButtonTypes.MINE_SELECT_START, pygame.image.load("sprites/mineFalse.png"), (200, 500), GameState.START_SCREEN ),
-]
 
-#TODO: add list for actual buttons
+ButtonList = [
+]

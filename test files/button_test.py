@@ -1,5 +1,11 @@
-import pygame, sys
+import pygame, sys, os
 from pygame.locals import *
+
+# code to allow using python code from parent directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
 import button as ButtonClass
 
 #includes scraps from https://coderslegacy.com/python/python-pygame-tutorial/
@@ -33,7 +39,7 @@ def main():
                 rightMousePressed = pygame.mouse.get_pressed()[2]
                 position = pygame.mouse.get_pos()
                 if (leftMousePressed):
-                    for button in ButtonClass.TestButtonList:
+                    for button in ButtonClass.ButtonList:
                         #should add handling to check game state and only register click if the button's game state matches the current one
                         if (button.mRect.collidepoint(position)):
                             print(f"clicked: {button.mRect}")
@@ -49,7 +55,7 @@ def main():
                 sys.exit()
 
         #put in UI engine
-        for button in ButtonClass.TestButtonList:
+        for button in ButtonClass.ButtonList:
             DISPLAYSURF.blit(button.mImg, button.mRect)
 
         #upload window / surface changes
