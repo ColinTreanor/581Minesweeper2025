@@ -212,6 +212,11 @@ class UIEngine:
         mine_display = mid_font.render(f"Flags left: {board.flags}", True, BLACK)
         surface.blit(time_display, (10, board.board_size * cell_size + 65))
         surface.blit(mine_display, (10, board.board_size * cell_size + 110))
+        #emoji
+        emoji_rect = emoji_play.get_rect()
+        emoji_rect.midleft = (200,board.board_size * CELL_SIZE +160)
+        surface.blit(emoji_play, emoji_rect)
+
 
         for r in range(board.board_size):
             for c in range(board.board_size):
@@ -251,6 +256,9 @@ class UIEngine:
         time_size = mid_font.size(f"Time: {time} second(s)")
         surface.blit(time_display, (SCREEN_WIDTH/2 - time_size[0] / 2, SCREEN_HEIGHT / 2 + 200))
         surface.blit(WinTextSurface, (SCREEN_WIDTH / 2 - WinTextSize[0] / 2, SCREEN_HEIGHT / 2 + 200 - WinTextSize[0] / 2))
+        emoji_rect = emoji_win.get_rect()
+        emoji_rect.midleft = (SCREEN_WIDTH - 60, SCREEN_HEIGHT - 40)
+        surface.blit(emoji_win, emoji_rect)
         return
     
     def DisplayLoseScreen(surface : pygame.display, board, time):
@@ -268,6 +276,9 @@ class UIEngine:
         time_size = mid_font.size(f"Time: {time} second(s)")
         surface.blit(time_display, (SCREEN_WIDTH/2 - time_size[0] / 2, SCREEN_HEIGHT/2  + 200))
         surface.blit(text, text_rect)
+        emoji_rect = emoji_lose.get_rect()
+        emoji_rect.midleft = (SCREEN_WIDTH - 60, SCREEN_HEIGHT - 40)
+        surface.blit(emoji_lose, emoji_rect)
         return
 
     def DisplayButtons(surface: pygame.display, gameState: GameState):
