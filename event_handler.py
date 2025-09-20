@@ -26,7 +26,7 @@ class EventHandler:
                     for button in ButtonClass.ButtonList: 
                         if (button.mRect.collidepoint(position) and button.mOnState == game.state):
                             #TODO: implement other button functionality
-                            print(f"Button Type: {button.mButtonType}")
+                            # print(f"Button Type: {button.mButtonType}")
                             match button.mButtonType:
                                 case ButtonClass.ButtonTypes.WIN_RESTART_GAME | ButtonClass.ButtonTypes.LOSE_RESTART_GAME | ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME:
                                     game.ResetBoard()

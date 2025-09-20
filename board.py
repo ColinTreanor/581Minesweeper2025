@@ -119,11 +119,11 @@ class Board:
 
     def RevealSpace(self, spaceIdx: tuple):
         r, c = spaceIdx
-        print(f"RevealSpace called with indices: row={r}, col={c}")
-        print(f"Board size: {self.board_size}, actual_board dimensions: {len(self.actual_board)} x {len(self.actual_board[0])}")
+        # print(f"RevealSpace called with indices: row={r}, col={c}")
+        # print(f"Board size: {self.board_size}, actual_board dimensions: {len(self.actual_board)} x {len(self.actual_board[0])}")
 
         if not (0 <= r < self.board_size and 0 <= c < self.board_size):
-            print(f"Invalid indices: ({r}, {c}) - skipping")
+            # print(f"Invalid indices: ({r}, {c}) - skipping")
             return
 
         revealedSpace = self.actual_board[r][c]

@@ -21,7 +21,7 @@ source venv/bin/activate
 ## Download dependencies
 
 ```python
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Run the python Script
