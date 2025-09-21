@@ -193,55 +193,80 @@ class UIEngine:
         return
 
     def DisplayPlayingScreen(surface: pygame.display, board: Board,
-                             time):  # have to update all things calling this to include time as a param
+                             time):  
+        '''
+        Displays the playing screen for the minesweeper game. Creates the 10x10 board
+        and within the board if a square is clicked on it checks the value of that square
+        and decides what to do if its a mine, empty sqaure or if the user is placing a flag.
+        Also displays the timer, playing status, and allows the user to restart the game if
+        choose to
+        Params: suface = the pygame display
+                board = the board and all its information
+                time = the aamount of time that has elapsed 
+        '''
         UIEngine.explosion_played = False
         surface.fill(START_BG_COLOR)
 
-        cell_size = CELL_SIZE
-        # creating the coords is a little bit of a mess sorry, when you blit its basically surface.blit(x value, y value)
-        cell_size = 40
-        font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 24)
-        big_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 56)
-        mid_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 40)
-        #minesweeper_title = pygame.image.load("./sprites/start_screen/minesweeper_title.png").convert_alpha()
-        #minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
-        #surface.blit(minesweeper_title, (10, (board.board_size * cell_size + 10)))
+        #sets font size, big medium and normal
+        font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 24) #sets font to size 24
+        mid_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 40) #sets font to size 40
+        big_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 56) #sets font to size 56
+
+        #this commented code shows the minesweeper title instead of the playing status
+        '''
+        minesweeper_title = pygame.image.load("./sprites/start_screen/minesweeper_title.png").convert_alpha()
+        minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
+        surface.blit(minesweeper_title, (x_AXIS, (board.board_size * cell_size + 10)))
+        '''
+        #displays the playing status
         title = big_font.render("Playing ...", True, BLACK)
-        surface.blit(title, (10, board.board_size * cell_size + 10))
+        surface.blit(title, (x_AXIS, board.board_size * CELL_SIZE + TEXT_OFFSET_TITLE))
+
+        #displays the time
         time_display = big_font.render(f"Time: {time}", True, BLACK)
+        surface.blit(time_display, (x_AXIS, board.board_size * CELL_SIZE + TEXT_OFFSET_TIME))
+
+        #displays the flags left
         mine_display = mid_font.render(f"Flags left: {board.flags}", True, BLACK)
-        surface.blit(time_display, (10, board.board_size * cell_size + 65))
-        surface.blit(mine_display, (10, board.board_size * cell_size + 110))
+        surface.blit(mine_display, (x_AXIS, board.board_size * CELL_SIZE + TEXT_OFFSET_FLAGS))
+
         #emoji
         emoji_rect = emoji_play.get_rect()
-        emoji_rect.midleft = (200,board.board_size * CELL_SIZE +160)
+        emoji_rect.midleft = (EMOJI_X_OFFSET_PLAYING, board.board_size * CELL_SIZE + EMOJI_Y_OFFSET_PLAYING)
         surface.blit(emoji_play, emoji_rect)
 
-
+        #creates the board by looping through each row and column within the board size
         for r in range(board.board_size):
             for c in range(board.board_size):
-                visible_piece = board.visible_board[r][c]
-                actual_piece = board.actual_board[r][c]
-                rect = pygame.Rect(c * cell_size, r * cell_size, cell_size, cell_size)
-                if visible_piece == BoardPiece.FLAG:
-                    surface.blit(filled_square, rect)
+                visible_piece = board.visible_board[r][c] #gets the current position of the visible board at r,c
+                actual_piece = board.actual_board[r][c] #gets the current position of the actual board at r,c
+                rect = pygame.Rect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE) #creates the cell
+                if visible_piece == BoardPiece.FLAG: #checks if visible piece is a flag
+                    surface.blit(filled_square, rect) #draws a flag
                     surface.blit(flag_img, rect)
-                elif visible_piece != BoardPiece.UNKNOWN:
-                    surface.blit(empty_square, rect)
-                    if actual_piece != BoardPiece.MINE and isinstance(actual_piece.value,
-                                                                      int) and actual_piece.value > 0:
+                elif visible_piece != BoardPiece.UNKNOWN: #checks if its been revealed
+                    surface.blit(empty_square, rect) 
+                    #if its not a mine and it has a int assigned to it greater than 0 due to how many mines its touching
+                    if actual_piece != BoardPiece.MINE and isinstance(actual_piece.value, 
+                                                                      int) and actual_piece.value > 0: 
+                        #draw the mine with the correct value attached
                         text = font.render(str(actual_piece.value), True, BLACK)
                         text_rect = text.get_rect(center=rect.center)
                         surface.blit(text, text_rect)
                 else:
+                    #if its not revealed draw a blank square
                     surface.blit(filled_square, rect)
-                pygame.draw.rect(surface, BLACK, rect, 1)
+
+                pygame.draw.rect(surface, BLACK, rect, 1) #creates cell boarder 
+
+                #creates column labels
                 if (r == 0):
                     chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'h']
                     row = font.render(f"{chars[c]}", True, BLACK)
-                    surface.blit(row, (cell_size * c + 10, -1)) 
+                    surface.blit(row, (CELL_SIZE * c + 10, -1)) 
+            #creates row labels
             row = font.render(f"{r+1}", True, BLACK)
-            surface.blit(row, (-1, cell_size * r + 10)) 
+            surface.blit(row, (-1, CELL_SIZE * r + 10)) 
         return
 
     def DisplayWinScreen(surface: pygame.display, board, time):
