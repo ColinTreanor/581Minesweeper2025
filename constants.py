@@ -21,6 +21,13 @@ MIN_MINES = 10
 
 CELL_SIZE = 40
 
+x_AXIS = 10
+TEXT_OFFSET_TITLE = 10
+TEXT_OFFSET_TIME = 65
+TEXT_OFFSET_FLAGS = 110
+EMOJI_X_OFFSET_PLAYING = 200
+EMOJI_Y_OFFSET_PLAYING = 160
+
 empty_square = pygame.image.load('sprites/empty_square.png')
 filled_square = pygame.image.load('sprites/filled_square.png')
 flag_img = pygame.image.load('sprites/flag.png')
