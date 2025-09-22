@@ -13,13 +13,15 @@ BLACK = (0,0,0)
 BUTTON_RED = (225, 105, 105)
  
 # Screen information
-SCREEN_WIDTH = 400
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 430
+SCREEN_HEIGHT = 650
 
 MAX_MINES = 20
 MIN_MINES = 10
 
 CELL_SIZE = 40
+GRID_OFFSET_X = 30
+GRID_OFFSET_Y = 30
 
 x_AXIS = 10
 TEXT_OFFSET_TITLE = 10
@@ -35,6 +37,15 @@ mine_img = pygame.image.load('sprites/mine.png')
 mine_clicked_img = pygame.image.load('sprites/mineClicked.png')
 mine_false_img = pygame.image.load('sprites/mineFalse.png')
 
+grid1_img = pygame.image.load('sprites/grid1.png')
+grid2_img = pygame.image.load('sprites/grid2.png')
+grid3_img = pygame.image.load('sprites/grid3.png')
+grid4_img = pygame.image.load('sprites/grid4.png')
+grid5_img = pygame.image.load('sprites/grid5.png')
+grid6_img = pygame.image.load('sprites/grid6.png')
+grid7_img = pygame.image.load('sprites/grid7.png')
+grid8_img = pygame.image.load('sprites/grid8.png')
+
 emoji_play = pygame.image.load('sprites/playing.png')
 emoji_lose = pygame.image.load('sprites/lose.png')
 
@@ -46,3 +57,23 @@ flag_img = pygame.transform.scale(flag_img, (CELL_SIZE, CELL_SIZE))
 mine_img = pygame.transform.scale(mine_img, (CELL_SIZE, CELL_SIZE))
 mine_clicked_img = pygame.transform.scale(mine_clicked_img, (CELL_SIZE, CELL_SIZE))
 mine_false_img = pygame.transform.scale(mine_false_img, (CELL_SIZE, CELL_SIZE))
+
+grid1_img = pygame.transform.scale(grid1_img, (CELL_SIZE, CELL_SIZE))
+grid2_img = pygame.transform.scale(grid2_img, (CELL_SIZE, CELL_SIZE))
+grid3_img = pygame.transform.scale(grid3_img, (CELL_SIZE, CELL_SIZE))
+grid4_img = pygame.transform.scale(grid4_img, (CELL_SIZE, CELL_SIZE))
+grid5_img = pygame.transform.scale(grid5_img, (CELL_SIZE, CELL_SIZE))
+grid6_img = pygame.transform.scale(grid6_img, (CELL_SIZE, CELL_SIZE))
+grid7_img = pygame.transform.scale(grid7_img, (CELL_SIZE, CELL_SIZE))
+grid8_img = pygame.transform.scale(grid8_img, (CELL_SIZE, CELL_SIZE))
+
+grid_imgs = {
+    1: grid1_img,
+    2: grid2_img,
+    3: grid3_img,
+    4: grid4_img,
+    5: grid5_img,
+    6: grid6_img,
+    7: grid7_img,
+    8: grid8_img,
+}

@@ -79,7 +79,7 @@ class UIEngine:
         restart_img.blit(label, (40, 10))
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.LOSE_RESTART_GAME,
-            restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 275), GameState.LOSE_SCREEN
+            restart_img, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 275), GameState.LOSE_SCREEN
         ))
 
         # win screen restart
@@ -90,7 +90,7 @@ class UIEngine:
         win_restart_img.blit(win_label, (40, 10))
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.WIN_RESTART_GAME,
-            win_restart_img, (SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 275), GameState.WIN_SCREEN
+            win_restart_img, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 275), GameState.WIN_SCREEN
         ))
 
         # playing screen restart
@@ -104,19 +104,20 @@ class UIEngine:
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME,
             playing_restart_img,
-            (75, 570), GameState.PLAYING
+            (75, 620), GameState.PLAYING
         ))
         return
 
     def DisplayEndGameBoard(surface: pygame.display, board: Board):
         cell_size = CELL_SIZE
         font = pygame.font.SysFont(None, 24)
-
+        grid_offset_x = GRID_OFFSET_X
+        grid_offset_y = GRID_OFFSET_Y
         for r in range(board.board_size):
             for c in range(board.board_size):
                 actual = board.actual_board[r][c]
                 visible = board.visible_board[r][c]
-                rect = pygame.Rect(c * cell_size, r * cell_size, cell_size, cell_size)
+                rect = pygame.Rect(grid_offset_x + c * cell_size, grid_offset_y + r * cell_size, cell_size, cell_size)
                 if actual == BoardPiece.MINE:
                     if visible == BoardPiece.MINE:
                         surface.blit(mine_clicked_img, rect)
@@ -128,10 +129,16 @@ class UIEngine:
                     else:
                         surface.blit(empty_square, rect)
                         if actual.value > 0:
-                            text = font.render(str(actual.value), True, BLACK)
-                            text_rect = text.get_rect(center=rect.center)
-                            surface.blit(text, text_rect)
+                            surface.blit(grid_imgs[actual.value], rect)
                 pygame.draw.rect(surface, BLACK, rect, 1)
+        # headers
+        letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+        for r in range(board.board_size):
+            row_label = font.render(f"{r+1}", True, BLACK)
+            surface.blit(row_label, (10, grid_offset_y + r * cell_size + cell_size // 3))
+        for c in range(board.board_size):
+            column_label = font.render(letters[c], True, BLACK)
+            surface.blit(column_label, (grid_offset_x + c * cell_size + cell_size // 3, 10))
 
     def UpdateDisplay(surface: pygame.display, board: Board, time):
         '''
@@ -183,7 +190,7 @@ class UIEngine:
         # draw minesweeper title on screen
         minesweeper_title = pygame.image.load("./sprites/start_screen/minesweeper_title.png").convert_alpha()
         minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
-        surface.blit(minesweeper_title, (50, 35))
+        surface.blit(minesweeper_title, (60, 35))
 
         pygame.draw.rect(surface, START_LIGHT_LINE_COLOR, pygame.Rect(150, 240, 100, 75))
 
@@ -193,7 +200,7 @@ class UIEngine:
         return
 
     def DisplayPlayingScreen(surface: pygame.display, board: Board,
-                             time):  
+                             time):
         '''
         Displays the playing screen for the minesweeper game. Creates the 10x10 board
         and within the board if a square is clicked on it checks the value of that square
@@ -207,67 +214,71 @@ class UIEngine:
         UIEngine.explosion_played = False
         surface.fill(START_BG_COLOR)
 
-        #sets font size, big medium and normal
-        font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 24) #sets font to size 24
-        mid_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 40) #sets font to size 40
-        big_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 56) #sets font to size 56
+        # sets font size, big medium and normal
+        font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 24)  # sets font to size 24
+        mid_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 40)  # sets font to size 40
+        big_font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 56)  # sets font to size 56
+        cell_size = CELL_SIZE
 
-        #this commented code shows the minesweeper title instead of the playing status
+        # offset for row and column headers
+        grid_offset_x = GRID_OFFSET_X
+        grid_offset_y = GRID_OFFSET_Y
+
+        # this commented code shows the minesweeper title instead of the playing status
         '''
         minesweeper_title = pygame.image.load("./sprites/start_screen/minesweeper_title.png").convert_alpha()
         minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
         surface.blit(minesweeper_title, (x_AXIS, (board.board_size * cell_size + 10)))
         '''
-        #displays the playing status
+        # displays the playing status
         title = big_font.render("Playing ...", True, BLACK)
-        surface.blit(title, (x_AXIS, board.board_size * CELL_SIZE + TEXT_OFFSET_TITLE))
+        surface.blit(title, (x_AXIS, board.board_size * cell_size + TEXT_OFFSET_TITLE + grid_offset_y))
 
-        #displays the time
+        # displays the time
         time_display = big_font.render(f"Time: {time}", True, BLACK)
-        surface.blit(time_display, (x_AXIS, board.board_size * CELL_SIZE + TEXT_OFFSET_TIME))
+        surface.blit(time_display, (x_AXIS, board.board_size * cell_size + TEXT_OFFSET_TIME + grid_offset_y))
 
-        #displays the flags left
+        # displays the flags left
         mine_display = mid_font.render(f"Flags left: {board.flags}", True, BLACK)
-        surface.blit(mine_display, (x_AXIS, board.board_size * CELL_SIZE + TEXT_OFFSET_FLAGS))
+        surface.blit(mine_display, (x_AXIS, board.board_size * cell_size + TEXT_OFFSET_FLAGS + grid_offset_y))
 
-        #emoji
+        # emoji
         emoji_rect = emoji_play.get_rect()
-        emoji_rect.midleft = (EMOJI_X_OFFSET_PLAYING, board.board_size * CELL_SIZE + EMOJI_Y_OFFSET_PLAYING)
+        emoji_rect.midleft = (EMOJI_X_OFFSET_PLAYING, board.board_size * cell_size + EMOJI_Y_OFFSET_PLAYING)
         surface.blit(emoji_play, emoji_rect)
 
-        #creates the board by looping through each row and column within the board size
+        # creates the board by looping through each row and column within the board size
         for r in range(board.board_size):
             for c in range(board.board_size):
-                visible_piece = board.visible_board[r][c] #gets the current position of the visible board at r,c
-                actual_piece = board.actual_board[r][c] #gets the current position of the actual board at r,c
-                rect = pygame.Rect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE) #creates the cell
-                if visible_piece == BoardPiece.FLAG: #checks if visible piece is a flag
-                    surface.blit(filled_square, rect) #draws a flag
+                visible_piece = board.visible_board[r][c]  # gets the current position of the visible board at r,c
+                actual_piece = board.actual_board[r][c]  # gets the current position of the actual board at r,c
+                # creates the cell and shift the grid by an offset
+                rect = pygame.Rect(grid_offset_x + c * CELL_SIZE, grid_offset_y + r * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                if visible_piece == BoardPiece.FLAG:  # checks if visible piece is a flag
+                    surface.blit(filled_square, rect)  # draws a flag
                     surface.blit(flag_img, rect)
-                elif visible_piece != BoardPiece.UNKNOWN: #checks if its been revealed
-                    surface.blit(empty_square, rect) 
-                    #if its not a mine and it has a int assigned to it greater than 0 due to how many mines its touching
-                    if actual_piece != BoardPiece.MINE and isinstance(actual_piece.value, 
-                                                                      int) and actual_piece.value > 0: 
-                        #draw the mine with the correct value attached
-                        text = font.render(str(actual_piece.value), True, BLACK)
-                        text_rect = text.get_rect(center=rect.center)
-                        surface.blit(text, text_rect)
+                elif visible_piece != BoardPiece.UNKNOWN:  # checks if its been revealed
+                    surface.blit(empty_square, rect)
+                    # if its not a mine and it has a int assigned to it greater than 0 due to how many mines its touching
+                    if actual_piece != BoardPiece.MINE and isinstance(actual_piece.value,
+                                                                      int) and actual_piece.value > 0:
+                        surface.blit(grid_imgs[actual_piece.value], rect)
                 else:
-                    #if its not revealed draw a blank square
+                    # if its not revealed draw a blank square
                     surface.blit(filled_square, rect)
 
-                pygame.draw.rect(surface, BLACK, rect, 1) #creates cell boarder 
+                pygame.draw.rect(surface, BLACK, rect, 1)  # creates cell boarder
 
-                #creates column labels
-                if (r == 0):
-                    chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'h']
-                    row = font.render(f"{chars[c]}", True, BLACK)
-                    surface.blit(row, (CELL_SIZE * c + 10, -1)) 
-            #creates row labels
-            row = font.render(f"{r+1}", True, BLACK)
-            surface.blit(row, (-1, CELL_SIZE * r + 10)) 
-        return
+        # creates labels
+        letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
+        # left row headers
+        for r in range(board.board_size):
+            row_label = font.render(f"{r + 1}", True, BLACK)
+            surface.blit(row_label, (10, grid_offset_y + r * cell_size + cell_size // 3))
+        # top column headers
+        for c in range(board.board_size):
+            col_label = font.render(letters[c], True, BLACK)
+            surface.blit(col_label, (grid_offset_x + c * cell_size + cell_size // 3, 10))
 
     def DisplayWinScreen(surface: pygame.display, board, time):
         surface.fill(START_BG_COLOR)
@@ -279,21 +290,22 @@ class UIEngine:
         mid_font = pygame.font.SysFont(None, 40)
         time_display = mid_font.render(f"Time: {time} second(s)", True, BLACK)
         time_size = mid_font.size(f"Time: {time} second(s)")
-        surface.blit(time_display, (SCREEN_WIDTH/2 - time_size[0] / 2, SCREEN_HEIGHT / 2 + 200))
-        surface.blit(WinTextSurface, (SCREEN_WIDTH / 2 - WinTextSize[0] / 2, SCREEN_HEIGHT / 2 + 200 - WinTextSize[0] / 2))
+        surface.blit(time_display, (SCREEN_WIDTH / 2 - time_size[0] / 2, SCREEN_HEIGHT / 2 + 200))
+        surface.blit(WinTextSurface,
+                     (SCREEN_WIDTH / 2 - WinTextSize[0] / 2, SCREEN_HEIGHT / 2 + 200 - WinTextSize[0] / 2))
         """ emoji_rect = emoji_win.get_rect()
         emoji_rect.midleft = (SCREEN_WIDTH - 60, SCREEN_HEIGHT - 40)
         surface.blit(emoji_win, emoji_rect) """
         return
-    
+
     def DisplayLoseScreen(surface : pygame.display, board, time):
         if not UIEngine.explosion_played:
             explosion_animation(surface, SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
             UIEngine.explosion_played = True
 
         surface.fill(START_BG_COLOR)
-        UIEngine.DisplayEndGameBoard(surface, board);
         font = pygame.font.Font(None, 56)
+        UIEngine.DisplayEndGameBoard(surface, board);
         text = font.render("You Lose!", True, RED)
         text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2  + 150))
         mid_font = pygame.font.SysFont(None, 40)
