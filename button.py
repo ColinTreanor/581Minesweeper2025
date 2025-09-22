@@ -19,7 +19,7 @@ External Sources:
     - Pygame library for images, rects, and collision detection
 
 Author: Team 17
-Creation Date: ___
+Creation Date: 9/8/2025
 """
 import pygame
 from pygame.locals import *

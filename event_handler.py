@@ -21,7 +21,7 @@ External Sources:
     - Python sys library for application termination
 
 Author: Team 17
-Creation Date: ___
+Creation Date: 9/3/2025
 """
 import pygame, sys
 from pygame.locals import *

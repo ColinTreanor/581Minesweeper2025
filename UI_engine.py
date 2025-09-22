@@ -21,8 +21,8 @@ External Sources:
     - Pygame library for rendering and animation
     - Assets (sprites, fonts) located in the sprites/ and fonts/ directories
 
-Author: (Your Name or Team)
-Creation Date: (Insert date here)
+Author: Team 17
+Creation Date: 9/3/2025
 """
 
 from board import *

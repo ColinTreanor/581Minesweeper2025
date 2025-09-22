@@ -1,3 +1,23 @@
+"""
+Minesweeper Constants Module
+
+Module Name: constants.py
+Description: Stores all global values used in implementation of MineSweeper
+
+Inputs:
+    - N/A
+
+Outputs:
+    - N/A
+
+External Sources:
+    - Pygame library for rendering and animation
+    - Assets (sprites, fonts) located in the sprites/ and fonts/ directories
+
+Author: Team 17
+Creation Date: 9/8/2025
+"""
+
 import pygame
 # Predefined some colors
 BLUE  = (0, 0, 255)

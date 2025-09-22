@@ -22,7 +22,7 @@ External Sources:
     - Python enum module for type safety
 
 Author: Benjamin Stonestreet
-Creation Date: September 10, 2025
+Creation Date: 9/10/2025
 """
 
 from enum import Enum  # Python standard library for enumeration types

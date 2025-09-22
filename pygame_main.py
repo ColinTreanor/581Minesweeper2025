@@ -20,12 +20,10 @@ Outputs:
 
 External Sources:
     - pygame: Graphics and event system
-    - event_handler: For processing user interactions
-    - board: Core game logic and state management
-    - UI_engine: For drawing UI and game board
-    - constants: For screen dimensions, colors, and configuration
-Author: ___
-Creation Date: ___
+    - Original template was initially created from / expanded on some parts in https://coderslegacy.com/python/python-pygame-tutorial/
+
+Author: Team 17
+Creation Date: 9/3/2025
 """
 
 import pygame
@@ -34,7 +32,6 @@ from board import *
 from UI_engine import UIEngine
 from constants import *
 
-#includes scraps from https://coderslegacy.com/python/python-pygame-tutorial/
 FPS = 60
 FramePerSec = pygame.time.Clock()
 
