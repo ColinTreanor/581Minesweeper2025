@@ -1,3 +1,28 @@
+"""
+Minesweeper Event Handling Module
+
+Module Name: event_handler.py
+Description: Handles user input and translates events into game actions.
+             Processes mouse clicks, button presses, and quit events.
+             Communicates between Pygame's event system and the Board's
+             game logic.
+
+Inputs:
+    - Pygame events (mouse clicks, quit)
+    - Current Board instance (state, mine/flag counts, etc.)
+
+Outputs:
+    - Updates to Board state (revealing spaces, placing flags, resetting)
+    - Updates to mine/flag counts when adjusting game difficulty
+    - State transitions (start → playing, playing → win/lose, etc.)
+
+External Sources:
+    - Pygame event system for capturing user input
+    - Python sys library for application termination
+
+Author: Team 17
+Creation Date: ___
+"""
 import pygame, sys
 from pygame.locals import *
 from board import *
@@ -6,9 +31,26 @@ from constants import CELL_SIZE, GRID_OFFSET_X, GRID_OFFSET_Y, MAX_MINES, MIN_MI
 
 
 class EventHandler:
+    """Handles Pygame events and dispatches game actions."""
     # Thinking no member variables, just member functions to implement functionality
 
     def HandleEvent(event: pygame.event, game: Board):
+        """Process a single Pygame event and apply changes to the game state.
+            Responsibilities:
+                - Handle quit events and terminate the program
+                - Handle mouse clicks for:
+                    * Interacting with on-screen buttons
+                    * Revealing spaces on the board
+                    * Placing/removing flags on the board
+                - Enforce board offsets so clicks align with the grid
+                - Update mine counts through arrow buttons on the start screen
+                - Transition game state from start → playing when beginning a game
+            Args:
+                event (pygame.event.Event): A Pygame event to process (mouse, quit, etc.)
+                game (Board): The current game board instance whose state may be updated.
+            Returns:
+                None
+        """
         '''
         will do one of the following:
             - close the game

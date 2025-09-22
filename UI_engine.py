@@ -1,3 +1,30 @@
+"""
+Minesweeper UI Engine Module
+
+Module Name: UI_engine.py
+Description: Handles all rendering and UI logic for the Minesweeper game.
+             Responsible for drawing game boards, start/win/lose screens,
+             buttons, animations, and headers. Provides centralized
+             display update functionality that responds to the Board's
+             current game state.
+
+Inputs:
+    - Board state (actual and visible boards, game state, timers, flags)
+    - User interface assets (sprites, fonts, colors)
+
+Outputs:
+    - Graphical rendering of the game board
+    - Display of buttons, timers, and game messages
+    - Particle explosion animations on loss
+
+External Sources:
+    - Pygame library for rendering and animation
+    - Assets (sprites, fonts) located in the sprites/ and fonts/ directories
+
+Author: (Your Name or Team)
+Creation Date: (Insert date here)
+"""
+
 from board import *
 import pygame
 import button as ButtonClass
@@ -5,7 +32,26 @@ from constants import *
 
 
 class Particle:
+    """Represents a single particle for the explosion animation.
+
+    Each particle has a position, velocity, color, and lifespan.
+    Particles move outward from the explosion origin and fade
+    over time until they disappear.
+
+    Attributes:
+        x (float): X-coordinate of the particle.
+        y (float): Y-coordinate of the particle.
+        radius (int): Particle size in pixels.
+        color (tuple): RGB color of the particle.
+        life (int): Frames remaining before the particle disappears.
+        vel (list[float]): [x, y] velocity vector for movement.
+    """
     def __init__(self, x, y):
+        """Initialize a particle at a given position.
+            Args:
+                x (float): Starting x-coordinate.
+                y (float): Starting y-coordinate.
+        """
         self.x = x
         self.y = y
         self.radius = random.randint(3, 6)
@@ -14,6 +60,10 @@ class Particle:
         self.vel = [random.uniform(-3, 3), random.uniform(-3, 3)]
 
     def update(self):
+        """Update particle position, velocity, and fade color.
+            Moves the particle according to its velocity and reduces
+            its remaining life, adjusting its color for a fading effect.
+        """
         self.x += self.vel[0]
         self.y += self.vel[1]
         self.life -= 1
@@ -24,11 +74,24 @@ class Particle:
         self.color = (r, g, b)
 
     def draw(self, screen):
+        """Render the particle onto the given screen surface.
+
+            Args:
+                screen (pygame.Surface): The surface to draw the particle on.
+        """
         if self.life > 0:
             pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
 
 
 def explosion_animation(screen, x, y):
+    """Play a particle explosion animation at given coordinates.
+        Args:
+            screen (pygame.Surface): Surface to render the explosion on.
+            x (int): X-coordinate of explosion center.
+            y (int): Y-coordinate of explosion center.
+        Returns:
+            None
+    """
     particles = [Particle(x, y) for _ in range(50)]
     clock = pygame.time.Clock()
     running = True
@@ -48,9 +111,18 @@ def explosion_animation(screen, x, y):
 
 
 class UIEngine:
+    """Engine for rendering Minesweeper UI and updating displays."""
     explosion_played = False
 
     def InitializeButtonList():
+        """Initialize all interactive buttons for the game UI.
+            Creates and positions all button objects used in the game,
+            including:
+                - Mine count selection (up/down arrows, start button)
+                - Restart buttons for midgame, win screen, and lose screen
+            Returns:
+                None
+        """
         # up arrow
         ButtonClass.ButtonList.append(ButtonClass.ButtonInfo(
             ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW,
@@ -109,6 +181,13 @@ class UIEngine:
         return
 
     def DisplayEndGameBoard(surface: pygame.display, board: Board):
+        """Draw the entire board after game over, including headers.
+            Args:
+                surface (pygame.Surface): Surface to render the board onto.
+                board (Board): Board instance containing actual/visible state.
+            Returns:
+                None
+        """
         cell_size = CELL_SIZE
         font = pygame.font.SysFont(None, 24)
         grid_offset_x = GRID_OFFSET_X
@@ -163,6 +242,14 @@ class UIEngine:
         return
 
     def DisplayStartScreen(surface: pygame.display, board: Board, time):
+        """Render the start screen UI.
+            Args:
+                surface (pygame.Surface): Display surface to draw onto.
+                board (Board): Game board for accessing mine count.
+                time (int): Elapsed game time (not used on this screen).
+            Returns:
+                None
+        """
         # fill with background color
         surface.fill(START_BG_COLOR)
 
@@ -281,6 +368,16 @@ class UIEngine:
             surface.blit(col_label, (grid_offset_x + c * cell_size + cell_size // 3, 10))
 
     def DisplayWinScreen(surface: pygame.display, board, time):
+        """Render the win screen.
+            Draws the final board with revealed state and displays a
+            congratulatory message.
+            Args:
+                surface (pygame.Surface): Display surface to draw onto.
+                board (Board): Completed board state.
+                time (int): Final elapsed time in seconds.
+            Returns:
+                None
+        """
         surface.fill(START_BG_COLOR)
         UIEngine.DisplayEndGameBoard(surface, board)
         WinFont = pygame.font.SysFont(None, 56)
@@ -299,6 +396,16 @@ class UIEngine:
         return
 
     def DisplayLoseScreen(surface : pygame.display, board, time):
+        """Render the lose screen.
+            Plays explosion animation (once), draws final board with mines
+            revealed, and shows defeat message.
+            Args:
+                surface (pygame.Surface): Display surface to draw onto.
+                board (Board): Completed board state with loss.
+                time (int): Final elapsed time in seconds.
+            Returns:
+                None
+        """
         if not UIEngine.explosion_played:
             explosion_animation(surface, SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
             UIEngine.explosion_played = True
@@ -319,6 +426,14 @@ class UIEngine:
         return
 
     def DisplayButtons(surface: pygame.display, gameState: GameState):
+        """Render buttons appropriate to the current game state.
+            Args:
+                surface (pygame.Surface): Display surface to draw buttons on.
+                gameState (GameState): Current game state to determine which
+                                        buttons should be active.
+            Returns:
+                None
+            """
         for button in ButtonClass.ButtonList:
             if (gameState == button.mOnState):
                 surface.blit(button.mImg, button.mRect)

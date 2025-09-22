@@ -39,6 +39,27 @@ FPS = 60
 FramePerSec = pygame.time.Clock()
 
 def main():
+    """Main execution loop for the Minesweeper game
+
+        Initializes and configures the game window, creates the Board
+        object, sets up UI elements, and enters the infinite event loop.
+
+        Flow of execution:
+            1. Initialize Pygame and configure display window
+            2. Call UIEngine to initialize interactive buttons
+            3. Create Board object in START_SCREEN state
+            4. Run event loop:
+                - Capture and process user input with EventHandler
+                - Update game visuals using UIEngine
+                - Refresh window at fixed frame rate (FPS)
+        Inputs:
+            - User mouse/keyboard events handled by EventHandler
+            - Board state transitions (START_SCREEN, PLAYING, WIN_SCREEN, LOSE_SCREEN)
+
+        Outputs:
+            - Updated graphical display showing current game state
+            - Consistent frame rate controlled rendering
+        """
     #make pygame stuff
     pygame.init()
     DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
