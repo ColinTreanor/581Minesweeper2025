@@ -120,7 +120,6 @@ class Board:
         self.state = GameState.PLAYING
         # Mark board as generated to enable timer
         self.board_generated = True
-        
         # Generate board based on player's first click (ensure first click is safe)
         mines_placed: int = 0
         # Continue until all mines are placed
@@ -138,9 +137,17 @@ class Board:
                 # Iterate through 3x3 grid around the mine
                 for x in range(max(0, rand_x - 1), min(rand_x + 2, self.board_size)):
                     for y in range(max(0, rand_y - 1), min(rand_y + 2, self.board_size)):
+                        print("x:",x)
+                        print("y:", y)
                         # Increment count for non-mine spaces
                         if(self.actual_board[x][y] != BoardPiece.MINE):
                             self.actual_board[x][y] = self.actual_board[x][y].increment()
+                            self.PrintActualBoard()
+                            print()
+                        else:
+                            print("This position was a bomb and wasn't update")
+                            print()
+
                         
 
     def GetValue(self, spaceIdx: tuple):
@@ -338,7 +345,7 @@ class Board:
             for y in range(0, self.board_size):
                 # If any non-mine space is still unknown or flagged, game continues
                 if(self.actual_board[x][y] != BoardPiece.MINE and 
-                   (self.visible_board[x][y] == BoardPiece.UNKNOWN or 
+                (self.visible_board[x][y] == BoardPiece.UNKNOWN or 
                     self.visible_board[x][y] == BoardPiece.FLAG)):
                     return False  # Win condition not met
                 

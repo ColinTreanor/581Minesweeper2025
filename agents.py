@@ -50,6 +50,7 @@ class Agent():
 
     def medium_setup(self):
         #setting up class variables for medium agent
+        self.current_cell
         pass
 
     def hard_agent(self, actual_board):
