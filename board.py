@@ -29,6 +29,13 @@ from enum import Enum  # Python standard library for enumeration types
 import random  # Python standard library for random number generation
 from constants import MAX_MINES, MIN_MINES  # Local constants module for mine limits
 from pygame import time  # Pygame library for game timing functionality
+import pygame
+
+# Initialize pygame sound effects 
+pygame.mixer.init()
+ding = pygame.mixer.Sound("./soundfiles/ding(safetile).mp3") 
+swoosh = pygame.mixer.Sound("./soundfiles/swoosh.mp3")
+swooshReverse = pygame.mixer.Sound("./soundfiles/swooshreverse.mp3")
 
 class BoardPiece(Enum):
     """Enumeration class to represent different types of board spaces
@@ -211,10 +218,12 @@ class Board:
         if self.visible_board[r][c] == BoardPiece.FLAG:
             self.visible_board[r][c] = BoardPiece.UNKNOWN  # Return to unknown state
             self.flags += 1  # Increment available flags
+            swooshReverse.play() # Sound effect for removing a flag
         # If space is unknown, place a flag
         elif self.visible_board[r][c] == BoardPiece.UNKNOWN:
             self.visible_board[r][c] = BoardPiece.FLAG  # Mark with flag
             self.flags -= 1  # Decrement available flags
+            swoosh.play() # Sound effect for placing a flag 
 
     def RevealSpace(self, spaceIdx: tuple):
         """Reveal a space on the board and handle game logic
@@ -273,7 +282,6 @@ class Board:
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                     return self.visible_board
-
                 return self.visible_board
 
             case _:  # Default case - numbered space (1-8 adjacent mines)
@@ -285,7 +293,7 @@ class Board:
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                     return self.visible_board
-
+                ding.play() # Sound effect for selecting clear tile
                 return self.visible_board
 
 
