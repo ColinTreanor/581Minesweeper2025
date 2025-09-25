@@ -33,9 +33,11 @@ import pygame
 
 # Initialize pygame sound effects 
 pygame.mixer.init()
-ding = pygame.mixer.Sound("./soundfiles/ding(safetile).mp3") 
+ding = pygame.mixer.Sound("./soundfiles/ding.mp3") 
 swoosh = pygame.mixer.Sound("./soundfiles/swoosh.mp3")
 swooshReverse = pygame.mixer.Sound("./soundfiles/swooshreverse.mp3")
+explosion= pygame.mixer.Sound("./soundfiles/explosion.mp3")
+winner=pygame.mixer.Sound("./soundfiles/winner.mp3")
 
 class BoardPiece(Enum):
     """Enumeration class to represent different types of board spaces
@@ -266,11 +268,14 @@ class Board:
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE  # Show the mine
                 self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                 self.state = GameState.LOSE_SCREEN  # Set game state to loss
+                explosion.play()
                 return self.visible_board
                 
             case BoardPiece.ZERO:
                 # Empty space with no adjacent mines - auto-reveal surrounding area
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = 0  # Show as empty space
+                #safe tile 
+                ding.play()
 
                 # Recursively reveal all adjacent spaces (flood fill algorithm)
                 for x in range(max(0, spaceIdx[0] - 1), min(spaceIdx[0] + 2, self.board_size)):
@@ -281,6 +286,7 @@ class Board:
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
+                    winner.play()
                     return self.visible_board
                 return self.visible_board
 
