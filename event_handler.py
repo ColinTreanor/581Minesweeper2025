@@ -72,6 +72,7 @@ class EventHandler:
                         # print(f"Button Type: {button.mButtonType}")
                         match button.mButtonType:
                             case ButtonClass.ButtonTypes.WIN_RESTART_GAME | ButtonClass.ButtonTypes.LOSE_RESTART_GAME | ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME:
+                                menuSound.play()
                                 game.ResetBoard()
                             case ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW:
                                 # only update mines if it is less than max mines value
