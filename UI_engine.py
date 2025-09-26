@@ -30,6 +30,8 @@ import pygame
 import button as ButtonClass
 from constants import *
 
+pygame.mixer.init()
+welcome=pygame.mixer.Sound("./soundfiles/gamestart.mp3") #welcome music
 
 class Particle:
     """Represents a single particle for the explosion animation.

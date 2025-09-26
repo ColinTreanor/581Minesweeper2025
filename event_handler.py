@@ -75,13 +75,16 @@ class EventHandler:
                                 game.ResetBoard()
                             case ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW:
                                 # only update mines if it is less than max mines value
+                                menuSound.play()
                                 if game.mines < MAX_MINES:
                                     game.IncrimentMines()
                             case ButtonClass.ButtonTypes.MINE_SELECT_DOWN_ARROW:
                                 # only update mines if there are more than min mines value
+                                menuSound.play()
                                 if game.mines > MIN_MINES:
                                     game.DecramentMines()
                             case ButtonClass.ButtonTypes.MINE_SELECT_START:
+                                menuSound.play()
                                 game.state = GameState.PLAYING
                         break
 

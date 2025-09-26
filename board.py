@@ -38,7 +38,8 @@ swoosh = pygame.mixer.Sound("./soundfiles/swoosh.mp3")
 swooshReverse = pygame.mixer.Sound("./soundfiles/swooshreverse.mp3")
 explosion= pygame.mixer.Sound("./soundfiles/explosion.mp3")
 winner=pygame.mixer.Sound("./soundfiles/winner.mp3")
-
+welcome=pygame.mixer.Sound("./soundfiles/gamestart.mp3")
+menuSound=pygame.mixer.Sound("./soundfiles/menuselect.mp3")
 class BoardPiece(Enum):
     """Enumeration class to represent different types of board spaces
     
