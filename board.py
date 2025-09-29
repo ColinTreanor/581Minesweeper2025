@@ -299,6 +299,7 @@ class Board:
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
+                    winner.play()
                     return self.visible_board
                 ding.play() # Sound effect for selecting clear tile
                 return self.visible_board
