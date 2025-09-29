@@ -87,6 +87,7 @@ class Board:
 
     def __init__(self):
         self.ResetBoard() # set board to default values
+        self.prev_click = [0, 0]
 
     def ResetBoard(self):
         # sets b
@@ -343,3 +344,7 @@ class Board:
                     return False  # Win condition not met
                 
         return True  # All non-mine spaces revealed - player wins!
+    
+    def move_agent(self, rc):
+        r, c = rc
+        self.prev_click = [r, c]

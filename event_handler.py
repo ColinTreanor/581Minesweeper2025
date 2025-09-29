@@ -93,6 +93,7 @@ class EventHandler:
                     if 0 <= gx < game.board_size * CELL_SIZE and 0 <= gy < game.board_size * CELL_SIZE:
                         c = gx // CELL_SIZE
                         r = gy // CELL_SIZE
+                        game.move_agent((r, c))
                         game.RevealSpace((r, c))
 
             elif (rightMousePressed): # Same logic for reveal space upon left click to adjust for offset

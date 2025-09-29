@@ -29,6 +29,8 @@ from board import *
 import pygame
 import button as ButtonClass
 from constants import *
+import math
+from time import sleep as sleep
 
 
 class Particle:
@@ -113,6 +115,7 @@ def explosion_animation(screen, x, y):
 class UIEngine:
     """Engine for rendering Minesweeper UI and updating displays."""
     explosion_played = False
+    agent_pos = [30, 30]
 
     def InitializeButtonList():
         """Initialize all interactive buttons for the game UI.
@@ -367,6 +370,14 @@ class UIEngine:
             col_label = font.render(letters[c], True, BLACK)
             surface.blit(col_label, (grid_offset_x + c * cell_size + cell_size // 3, 10))
 
+        if board.prev_click != [0, 0]:
+            done = UIEngine.move_agent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1], board.prev_click[0], board.prev_click[1])
+            if done:
+                board.prev_click = [0, 0]
+                UIEngine._DrawAgent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1])
+        else:
+            UIEngine._DrawAgent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1])
+
     def DisplayWinScreen(surface: pygame.display, board, time):
         """Render the win screen.
             Draws the final board with revealed state and displays a
@@ -452,3 +463,50 @@ class UIEngine:
         """
         img = font.render(text, True, text_col)
         surface.blit(img, (x, y))
+
+    def _DrawAgent(surface: pygame.display, x: int, y: int):
+        """
+        Function that draws text to the screen
+        Params:
+            surface: surface to draw agent on
+            x: x coordinate for agent to move to
+            y: y coordinate for agent to move to
+        """
+        surface.blit(agent_img, (x, y))
+
+    def get_pixel_coord(r, c):
+        return (GRID_OFFSET_X + c * CELL_SIZE, GRID_OFFSET_Y + r * CELL_SIZE)
+    
+    def move_agent(surface: pygame.display, prev_r: int, prev_c: int, r: int, c: int):
+        speed = 10 #wait time for each move
+        prev_coords = [prev_r, prev_c]
+        coords = list(UIEngine.get_pixel_coord(r, c))
+        steps = max(abs(prev_coords[0]-coords[0]), abs(prev_coords[1]-coords[1]))
+
+        #one step
+        dx = coords[0] - prev_coords[0]
+        dy = coords[1] - prev_coords[1]
+        distance = math.sqrt(dx**2 + dy**2) // 1
+        done = False
+
+        if distance > 0:
+            # Calculate normalized direction vector
+            unit_dx = dx / distance
+            unit_dy = dy / distance
+
+            # Check if we will overshoot the target
+            if speed >= distance:
+                done = True
+                prev_coords = coords
+            else:
+                prev_coords[0] += (unit_dx * speed)//1
+                prev_coords[1] += (unit_dy * speed)//1
+        else:
+            done = True
+            prev_coords = coords
+
+        UIEngine._DrawAgent(surface, prev_coords[0], prev_coords[1])
+        UIEngine.agent_pos = prev_coords
+        print(done)
+        print(prev_coords)
+        return done
