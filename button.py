@@ -26,7 +26,6 @@ from pygame.locals import *
 from board import GameState
 from enum import Enum
 from UI_engine import UIEngine
-from UI_engine import welcome
 
 class ButtonTypes(Enum):
     """Enumeration of all button types in the Minesweeper UI.
