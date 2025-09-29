@@ -97,6 +97,7 @@ class Board:
         self.StartTime = 0
         self.board_generated: bool = False
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
+
         self.actual_board: list = [[BoardPiece.ZERO for _ in range(self.board_size)] for _ in range(self.board_size)]
 
     def CalculateDuration(self):
@@ -193,7 +194,11 @@ class Board:
                     continue
                 # Print actual value for revealed spaces
                 else: 
-                    print(self.visible_board[x][y].value, end = ' ')
+                    # Handle both BoardPiece enum values and direct integer values
+                    if hasattr(self.visible_board[x][y], 'value'):
+                        print(self.visible_board[x][y].value, end = ' ')
+                    else:
+                        print(self.visible_board[x][y], end = ' ')
 
             print()  # New line after each row
 
@@ -228,13 +233,13 @@ class Board:
             spaceIdx (tuple): (row, col) coordinates to reveal
             
         Returns:
-            list: Updated visible board state, or None if no change
+            bool: True if space was successfully revealed, False if already revealed/flagged or invalid coordinates
         """
         r, c = spaceIdx  # Extract row and column coordinates
 
         # Validate coordinates are within board bounds
         if not (0 <= r < self.board_size and 0 <= c < self.board_size):
-            return  # Exit if coordinates are invalid
+            return False  # Return False if coordinates are invalid
 
         # Get the actual content at the specified location
         revealedSpace = self.actual_board[r][c]
@@ -248,7 +253,7 @@ class Board:
 
         # Only reveal unknown spaces (ignore already revealed or flagged spaces)
         if(self.visible_board[spaceIdx[0]][spaceIdx[1]] != BoardPiece.UNKNOWN):
-            return  # Exit if space is already revealed or flagged
+            return False  # Return False if space is already revealed or flagged
 
         # Handle different types of revealed spaces
         match revealedSpace:
@@ -258,7 +263,7 @@ class Board:
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE  # Show the mine
                 self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                 self.state = GameState.LOSE_SCREEN  # Set game state to loss
-                return self.visible_board
+                return True  # Return True indicating successful reveal (even though it's a mine)
                 
             case BoardPiece.ZERO:
                 # Empty space with no adjacent mines - auto-reveal surrounding area
@@ -273,9 +278,9 @@ class Board:
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                    return self.visible_board
+                    return True  # Return True indicating successful reveal
 
-                return self.visible_board
+                return True  # Return True indicating successful reveal
 
             case _:  # Default case - numbered space (1-8 adjacent mines)
                 # Reveal the number of adjacent mines
@@ -285,9 +290,9 @@ class Board:
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                    return self.visible_board
+                    return True  # Return True indicating successful reveal
 
-                return self.visible_board
+                return True  # Return True indicating successful reveal
 
 
     def ReturnVisableBoard(self):
@@ -309,7 +314,7 @@ class Board:
         self.mines = mines    # Set mine count
         self.flags = mines    # Set flag count to match mine count
 
-    def IncrimentMines(self):
+    def IncrementMines(self):
         """Increase mine and flag count by 1
         
         Used for difficulty adjustment during game setup.
@@ -317,7 +322,7 @@ class Board:
         self.mines += 1  # Increment mine count
         self.flags += 1  # Increment available flags to match
 
-    def DecramentMines(self):
+    def DecrementMines(self):
         """Decrease mine and flag count by 1
         
         Used for difficulty adjustment during game setup.

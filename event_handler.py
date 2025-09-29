@@ -29,12 +29,21 @@ from board import *
 import button as ButtonClass
 from constants import CELL_SIZE, GRID_OFFSET_X, GRID_OFFSET_Y, MAX_MINES, MIN_MINES
 
+import agents
+
+
+WIN_RESTART_GAME = ButtonClass.ButtonTypes.WIN_RESTART_GAME
+LOSE_RESTART_GAME = ButtonClass.ButtonTypes.LOSE_RESTART_GAME
+MIDGAME_RESTART_GAME = ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME
+
+
 
 class EventHandler:
     """Handles Pygame events and dispatches game actions."""
     # Thinking no member variables, just member functions to implement functionality
 
     def HandleEvent(event: pygame.event, game: Board):
+        agent_turn = False
         """Process a single Pygame event and apply changes to the game state.
             Responsibilities:
                 - Handle quit events and terminate the program
@@ -76,11 +85,11 @@ class EventHandler:
                             case ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW:
                                 # only update mines if it is less than max mines value
                                 if game.mines < MAX_MINES:
-                                    game.IncrimentMines()
+                                    game.IncrementMines()
                             case ButtonClass.ButtonTypes.MINE_SELECT_DOWN_ARROW:
                                 # only update mines if there are more than min mines value
                                 if game.mines > MIN_MINES:
-                                    game.DecramentMines()
+                                    game.DecrementMines()
                             case ButtonClass.ButtonTypes.MINE_SELECT_START:
                                 game.state = GameState.PLAYING
                         break
@@ -93,8 +102,15 @@ class EventHandler:
                     if 0 <= gx < game.board_size * CELL_SIZE and 0 <= gy < game.board_size * CELL_SIZE:
                         c = gx // CELL_SIZE
                         r = gy // CELL_SIZE
-                        game.move_agent((r, c))
-                        game.RevealSpace((r, c))
+                        space_revealed = game.RevealSpace((r, c))
+                        if space_revealed:
+                            agent_move = agents.Agent(2).hard_agent(game.visible_board, game.actual_board)
+                            if agent_move:  # Check if agent found a valid move
+                                x_agent, y_agent = agent_move
+                                game.RevealSpace((x_agent, y_agent))
+                                game.move_agent((r, c))
+
+                        
 
             elif (rightMousePressed): # Same logic for reveal space upon left click to adjust for offset
                 if (game.state == GameState.PLAYING):

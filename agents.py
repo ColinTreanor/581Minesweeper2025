@@ -52,8 +52,19 @@ class Agent():
         #setting up class variables for medium agent
         pass
 
-    def hard_agent(self, actual_board):
+    def hard_agent(self, visible_board, actual_board):
         #function that returns hard mode (x, y) tuple
-        pass
+        from board import BoardPiece
+        
+        # Iterate through the board to find an unrevealed square that is not a bomb
+        for x in range(len(visible_board)):
+            for y in range(len(visible_board[0])):
+                # Check if the square is unrevealed and not a bomb
+                if (visible_board[x][y] == BoardPiece.UNKNOWN and 
+                    actual_board[x][y] != BoardPiece.MINE):
+                    return (x, y)  # Return the coordinates of the safe square
+        
+        # If no safe unrevealed squares found, return None
+        return None
 
         
