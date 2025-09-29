@@ -108,7 +108,7 @@ class EventHandler:
                             if agent_move:  # Check if agent found a valid move
                                 x_agent, y_agent = agent_move
                                 game.RevealSpace((x_agent, y_agent))
-                                game.move_agent((r, c))
+                                game.move_agent((x_agent, y_agent))
 
                         
 
