@@ -51,6 +51,18 @@ class BoardPiece(Enum):
     SEVEN = 7     # Seven adjacent mines
     EIGHT = 8     # Eight adjacent mines (maximum possible)
 
+    def __sub__(self, other):
+        if isinstance(other, (BoardPiece, int)):
+            return self.value - (other.value if isinstance(other, BoardPiece) else other)
+        return NotImplemented
+    
+    def __eq__(self, other):
+        if isinstance(other, BoardPiece):
+            return self.value == other.value
+        elif isinstance(other, (int, str)):
+            return self.value == other
+        return NotImplemented
+    
     def increment(self):
         """Increments the numerical value of non-mine spaces
         
