@@ -64,6 +64,9 @@ def main():
     DISPLAYSURF.fill(WHITE)
     pygame.display.set_caption("Game")
 
+
+   # call the welcome sound here!
+    welcome.play()
     #setup buttons
     UIEngine.InitializeButtonList()
 

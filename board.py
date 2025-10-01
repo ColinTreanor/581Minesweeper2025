@@ -29,7 +29,17 @@ from enum import Enum  # Python standard library for enumeration types
 import random  # Python standard library for random number generation
 from constants import MAX_MINES, MIN_MINES  # Local constants module for mine limits
 from pygame import time  # Pygame library for game timing functionality
+import pygame
 
+# Initialize pygame sound effects 
+pygame.mixer.init()
+ding = pygame.mixer.Sound("./soundfiles/ding.mp3") 
+swoosh = pygame.mixer.Sound("./soundfiles/swoosh.mp3")
+swooshReverse = pygame.mixer.Sound("./soundfiles/swooshreverse.mp3")
+explosion= pygame.mixer.Sound("./soundfiles/explosion.mp3")
+winner=pygame.mixer.Sound("./soundfiles/winner.mp3")
+welcome=pygame.mixer.Sound("./soundfiles/gamestart.mp3")
+menuSound=pygame.mixer.Sound("./soundfiles/menuselect.mp3")
 class BoardPiece(Enum):
     """Enumeration class to represent different types of board spaces
     
@@ -211,10 +221,12 @@ class Board:
         if self.visible_board[r][c] == BoardPiece.FLAG:
             self.visible_board[r][c] = BoardPiece.UNKNOWN  # Return to unknown state
             self.flags += 1  # Increment available flags
+            swooshReverse.play() # Sound effect for removing a flag
         # If space is unknown, place a flag
         elif self.visible_board[r][c] == BoardPiece.UNKNOWN:
             self.visible_board[r][c] = BoardPiece.FLAG  # Mark with flag
             self.flags -= 1  # Decrement available flags
+            swoosh.play() # Sound effect for placing a flag 
 
     def RevealSpace(self, spaceIdx: tuple):
         """Reveal a space on the board and handle game logic
@@ -257,11 +269,14 @@ class Board:
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE  # Show the mine
                 self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                 self.state = GameState.LOSE_SCREEN  # Set game state to loss
+                explosion.play()
                 return self.visible_board
                 
             case BoardPiece.ZERO:
                 # Empty space with no adjacent mines - auto-reveal surrounding area
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = 0  # Show as empty space
+                #safe tile 
+                ding.play()
 
                 # Recursively reveal all adjacent spaces (flood fill algorithm)
                 for x in range(max(0, spaceIdx[0] - 1), min(spaceIdx[0] + 2, self.board_size)):
@@ -272,8 +287,8 @@ class Board:
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
+                    winner.play()
                     return self.visible_board
-
                 return self.visible_board
 
             case _:  # Default case - numbered space (1-8 adjacent mines)
@@ -284,8 +299,9 @@ class Board:
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
+                    winner.play()
                     return self.visible_board
-
+                ding.play() # Sound effect for selecting clear tile
                 return self.visible_board
 
 
