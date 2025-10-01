@@ -31,6 +31,7 @@ from event_handler import EventHandler
 from board import *
 from UI_engine import UIEngine
 from constants import *
+from ai_solver import AISolver
 
 FPS = 60
 FramePerSec = pygame.time.Clock()
@@ -68,10 +69,27 @@ def main():
 
     #make our classes
     Game = Board()
+    ai = AISolver(Game)   # attach AI solver to the board
 
     while True:     
         for event in pygame.event.get():
+            # quit handling
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+
+            # existing event handling
             EventHandler.HandleEvent(event, Game)
+
+            # NEW: AI hotkeys
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_e:
+                    print("Easy AI triggered!")
+                    ai.move_easy()
+                elif event.key == pygame.K_h:
+                    print("Hard AI triggered!")
+                    ai.move_hard()
+            
 
         UIEngine.UpdateDisplay(DISPLAYSURF, Game, time=Game.CalculateDuration()) #need time calculation
         
