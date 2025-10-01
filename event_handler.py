@@ -28,7 +28,7 @@ from pygame.locals import *
 from board import *
 import button as ButtonClass
 from constants import CELL_SIZE, GRID_OFFSET_X, GRID_OFFSET_Y, MAX_MINES, MIN_MINES
-
+from time import sleep as sleep
 import agents
 
 
@@ -104,11 +104,11 @@ class EventHandler:
                         r = gy // CELL_SIZE
                         space_revealed = game.RevealSpace((r, c))
                         if space_revealed:
-                            agent_move = agents.Agent(2).hard_agent(game.visible_board, game.actual_board)
+                            agent_move = agents.Agent(2).run_agent(game.visible_board, game.actual_board)
                             if agent_move:  # Check if agent found a valid move
                                 x_agent, y_agent = agent_move
-                                game.RevealSpace((x_agent, y_agent))
                                 game.move_agent((x_agent, y_agent))
+                                # game.RevealSpace((x_agent, y_agent))
 
                         
 

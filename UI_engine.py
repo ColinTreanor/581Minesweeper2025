@@ -373,6 +373,7 @@ class UIEngine:
         if board.prev_click != [0, 0]:
             done = UIEngine.move_agent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1], board.prev_click[0], board.prev_click[1])
             if done:
+                board.RevealSpace(board.prev_click)
                 board.prev_click = [0, 0]
                 UIEngine._DrawAgent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1])
         else:

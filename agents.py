@@ -31,13 +31,13 @@ class Agent():
         if difficulty == 1:
             self.medium_setup()
 
-    def run_agent(self, board_state):
+    def run_agent(self, visible_state, actual_state):
         if self.difficulty == 0:
             click = self.easy_agent()
         elif self.difficulty == 1:
-            click = self.medium_agent(board_state)
+            click = self.medium_agent(visible_state)
         elif self.difficulty == 2:
-            click = self.hard_agent(board_state)
+            click = self.hard_agent(visible_state, actual_state)
 
         return click #(x, y) tuple to click
     
@@ -141,4 +141,4 @@ def testing():
         print("You Win!")
     elif board.state == GameState.LOSE_SCREEN:
         print("Game Over")
-testing()
+# testing()
