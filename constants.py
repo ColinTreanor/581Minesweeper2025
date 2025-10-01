@@ -97,3 +97,6 @@ grid_imgs = {
     7: grid7_img,
     8: grid8_img,
 }
+
+agent_img = pygame.image.load('sprites/agent.png')
+agent_img = pygame.transform.scale(agent_img, (CELL_SIZE, CELL_SIZE))
