@@ -89,7 +89,14 @@ class EventHandler:
                             case ButtonClass.ButtonTypes.MINE_SELECT_START:
                                 game.state = GameState.PLAYING 
                                 game.active_agent = True #COMMENT OUT IF YOU WANT TO PLAY WITHOUT AGENT
+                            case ButtonClass.ButtonTypes.GAME_MODE_TOGGLE:
+                                EventHandler._CycleGameMode(game)
                         break
+                
+                # Handle dropdown clicks (only on start screen)
+                if game.state == GameState.START_SCREEN:
+                    EventHandler._HandleDropdownClick(position, game)
+
 
                 if ( game.state == GameState.PLAYING and game.active_agent):
                     x, y = pygame.mouse.get_pos()
@@ -128,9 +135,56 @@ class EventHandler:
                         r = gy // CELL_SIZE
                         game.PlaceFlag((r, c))
 
-        if event.type == QUIT:
+        if event.type == pygame.QUIT:
             # end pygame
             pygame.quit()
             # end python script
             sys.exit()
         return
+    
+    def _CycleGameMode(game: Board):
+        """Cycle through game modes: Single Player -> Multiplayer -> Auto Solver -> Single Player.
+        
+        Args:
+            game (Board): Game board instance to update.
+        """
+        from constants import GameMode
+        
+        if game.game_mode == GameMode.SINGLE_PLAYER:
+            game.game_mode = GameMode.MULTIPLAYER
+        elif game.game_mode == GameMode.MULTIPLAYER:
+            game.game_mode = GameMode.AUTO_SOLVER
+        else:  # AUTO_SOLVER
+            game.game_mode = GameMode.SINGLE_PLAYER
+    
+    def _HandleDropdownClick(position: tuple, game: Board):
+        """Handle clicks on the bot difficulty dropdown.
+        
+        Args:
+            position (tuple): (x, y) click coordinates.
+            game (Board): Game board instance to update.
+        """
+        from constants import GameMode, BotDifficulty
+        
+        dropdown = ButtonClass.bot_difficulty_dropdown
+        if dropdown is None:
+            return
+            
+        # Only handle dropdown for multiplayer and auto solver modes
+        if game.game_mode not in [GameMode.MULTIPLAYER, GameMode.AUTO_SOLVER]:
+            return
+        
+        # Check if main dropdown button was clicked
+        if dropdown.main_rect.collidepoint(position):
+            dropdown.toggle()
+            return
+        
+        # Check if an option was clicked
+        clicked_option = dropdown.get_clicked_option(position)
+        if clicked_option:
+            dropdown.select_option(clicked_option)
+            # Update game board's bot difficulty
+            for difficulty in BotDifficulty:
+                if difficulty.value == clicked_option:
+                    game.bot_difficulty = difficulty
+                    break

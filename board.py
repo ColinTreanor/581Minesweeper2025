@@ -27,7 +27,7 @@ Creation Date: 9/10/2025
 
 from enum import Enum  # Python standard library for enumeration types
 import random  # Python standard library for random number generation
-from constants import MAX_MINES, MIN_MINES  # Local constants module for mine limits
+from constants import MAX_MINES, MIN_MINES, GameMode, BotDifficulty  # Local constants module for mine limits
 from pygame import time  # Pygame library for game timing functionality
 
 class BoardPiece(Enum):
@@ -112,6 +112,10 @@ class Board:
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
 
         self.actual_board: list = [[BoardPiece.ZERO for _ in range(self.board_size)] for _ in range(self.board_size)]
+        
+        # Game mode settings
+        self.game_mode: GameMode = GameMode.SINGLE_PLAYER
+        self.bot_difficulty: BotDifficulty = BotDifficulty.MEDIUM
 
     def CalculateDuration(self):
         if not self.board_generated:

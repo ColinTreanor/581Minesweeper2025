@@ -37,6 +37,11 @@ class ButtonTypes(Enum):
             MIDGAME_RESTART_GAME (int): Restart during an active game.
             WIN_RESTART_GAME (int): Restart after a win.
             LOSE_RESTART_GAME (int): Restart after a loss.
+            GAME_MODE_TOGGLE (int): Toggle between game modes.
+            BOT_DIFFICULTY_DROPDOWN (int): Open bot difficulty dropdown.
+            BOT_DIFFICULTY_EASY (int): Set bot difficulty to easy.
+            BOT_DIFFICULTY_MEDIUM (int): Set bot difficulty to medium.
+            BOT_DIFFICULTY_HARD (int): Set bot difficulty to hard.
     """
     #just enum class to represent pieces
     MINE_SELECT_UP_ARROW = 0
@@ -47,6 +52,12 @@ class ButtonTypes(Enum):
     MIDGAME_RESTART_GAME = 3
     WIN_RESTART_GAME = 4
     LOSE_RESTART_GAME = 5
+    # Game mode and bot difficulty buttons
+    GAME_MODE_TOGGLE = 6
+    BOT_DIFFICULTY_DROPDOWN = 7
+    BOT_DIFFICULTY_EASY = 8
+    BOT_DIFFICULTY_MEDIUM = 9
+    BOT_DIFFICULTY_HARD = 10
 
 class ButtonInfo():
     """Stores information about a UI button.
@@ -77,5 +88,76 @@ class ButtonInfo():
         #used for checking if button should be displayed / considered as valid
         self.mOnState = aOnState
 
+ButtonList = []
+
+class DropdownInfo():
+    """Stores information about a dropdown menu.
+    
+    Manages dropdown state, options, and positioning for bot difficulty selection.
+    
+    Attributes:
+        is_open (bool): Whether the dropdown is currently expanded.
+        selected_option (str): Currently selected option text.
+        options (list): List of available dropdown options.
+        main_rect (pygame.Rect): Main dropdown button rectangle.
+        option_rects (list): List of rectangles for each dropdown option.
+        position (tuple): (x, y) position of the dropdown.
+    """
+    def __init__(self, options, position, selected_option=None):
+        """Initialize a dropdown menu.
+        
+        Args:
+            options (list): List of string options for the dropdown.
+            position (tuple): (x, y) coordinates for dropdown position.
+            selected_option (str): Initially selected option (defaults to first).
+        """
+        self.is_open = False
+        self.options = options
+        self.selected_option = selected_option or options[0]
+        self.position = position
+        
+        # Create main dropdown button rect
+        self.main_rect = pygame.Rect(position[0], position[1], 120, 30)
+        
+        # Create option rects (positioned below main button when open)
+        self.option_rects = []
+        for i, option in enumerate(options):
+            rect = pygame.Rect(position[0], position[1] + 30 + (i * 25), 120, 25)
+            self.option_rects.append(rect)
+    
+    def toggle(self):
+        """Toggle dropdown open/closed state."""
+        self.is_open = not self.is_open
+    
+    def select_option(self, option):
+        """Select a specific option and close dropdown.
+        
+        Args:
+            option (str): The option to select.
+        """
+        if option in self.options:
+            self.selected_option = option
+            self.is_open = False
+    
+    def get_clicked_option(self, pos):
+        """Check if a click position hits any dropdown option.
+        
+        Args:
+            pos (tuple): (x, y) click coordinates.
+            
+        Returns:
+            str or None: The clicked option text, or None if no option clicked.
+        """
+        if not self.is_open:
+            return None
+            
+        for i, rect in enumerate(self.option_rects):
+            if rect.collidepoint(pos):
+                return self.options[i]
+        return None
+
 ButtonList = [
 ]
+
+# Global dropdown for bot difficulty selection
+bot_difficulty_dropdown = None
