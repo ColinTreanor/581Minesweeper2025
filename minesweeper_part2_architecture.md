@@ -28,4 +28,22 @@ Our implementation of sound effects, multiplayer, and AI mode follow the previou
 ## Data Flow
 ![Alt text](FlowChart.png)
 
-## Key Data Structures ???
+## Key Data Structures
+
+### Sound Effects
+```python
+sound = pygame.mixer.Sound("path/to/sound_file") 
+sound.play()
+```
+
+### Agent Class
+```python
+class Agent():
+    def run_agent()
+
+    def easy_agent()
+
+    def medium_agent()
+
+    def hard_agent()
+```
