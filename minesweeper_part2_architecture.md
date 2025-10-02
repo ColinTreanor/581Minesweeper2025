@@ -7,7 +7,7 @@ Our implementation of sound effects, multiplayer, and AI mode follow the previou
 ![Alt text](SystemArchitecture.png)
 
 ## Core Components
-1. agent.py
+### 1. agent.py
 **Responsibility**: Run easy, medium, or hard AI
 - Takes in the selection from the user of which AI they want and runs the function corresponding to it
 
@@ -17,11 +17,11 @@ Our implementation of sound effects, multiplayer, and AI mode follow the previou
     - medium_agent()
     - hard_agent()
 
-2. board.py
+### 2. board.py
 **Responsibility**: Play the sound effects when activated
 - When specific actions are done in the game the corresponding sound will play
 
-3. UI_engine.py
+### 3. UI_engine.py
 **Responsibilty**: Handles drawing and animating the AI agent character
 - When the user is playing in multiplayer or AI mode, the AI character will show the user its moves
 
