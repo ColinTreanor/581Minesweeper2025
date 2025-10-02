@@ -106,6 +106,7 @@ class Board:
         self.mines: int = 10
         self.flags: int = 10
         self.state: GameState = GameState.START_SCREEN
+        self.active_agent: bool = False
         self.StartTime = 0
         self.board_generated: bool = False
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]

@@ -77,6 +77,7 @@ class EventHandler:
                         match button.mButtonType:
                             case ButtonClass.ButtonTypes.WIN_RESTART_GAME | ButtonClass.ButtonTypes.LOSE_RESTART_GAME | ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME:
                                 game.ResetBoard()
+                                #game.move_agent((0,0)) #reset agent position
                             case ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW:
                                 # only update mines if it is less than max mines value
                                 if game.mines < MAX_MINES:
@@ -86,10 +87,11 @@ class EventHandler:
                                 if game.mines > MIN_MINES:
                                     game.DecrementMines()
                             case ButtonClass.ButtonTypes.MINE_SELECT_START:
-                                game.state = GameState.PLAYING
+                                game.state = GameState.PLAYING 
+                                game.active_agent = True #COMMENT OUT IF YOU WANT TO PLAY WITHOUT AGENT
                         break
 
-                if (game.state == GameState.PLAYING):
+                if ( game.state == GameState.PLAYING and game.active_agent):
                     x, y = pygame.mouse.get_pos()
                     gx = x - GRID_OFFSET_X  # Adjust board for x offset
                     gy = y - GRID_OFFSET_Y  # Adjust board for y offset
@@ -99,13 +101,22 @@ class EventHandler:
                         r = gy // CELL_SIZE
                         space_revealed = game.RevealSpace((r, c))
                         if space_revealed:
-                            agent_move = agents.Agent(1).run_agent(game)
+                            agent_move = agents.Agent(2).run_agent(game)
                             if agent_move:  # Check if agent found a valid move
                                 x_agent, y_agent = agent_move
                                 game.move_agent((x_agent, y_agent))
-                                # game.RevealSpace((x_agent, y_agent))
+                                game.RevealSpace((x_agent, y_agent))
 
-                        
+
+                if (game.state == GameState.PLAYING):
+                    x, y = pygame.mouse.get_pos()
+                    gx = x - GRID_OFFSET_X  # Adjust board for x offset
+                    gy = y - GRID_OFFSET_Y  # Adjust board for y offset
+                    # Only process clicks from inside the grid
+                    if 0 <= gx < game.board_size * CELL_SIZE and 0 <= gy < game.board_size * CELL_SIZE:
+                        c = gx // CELL_SIZE
+                        r = gy // CELL_SIZE
+                        game.RevealSpace((r, c))
 
             elif (rightMousePressed): # Same logic for reveal space upon left click to adjust for offset
                 if (game.state == GameState.PLAYING):
