@@ -33,7 +33,7 @@ class Agent():
 
     def run_agent(self, board : Board):
         if self.difficulty == 0:
-            click = self.easy_agent()
+            click = self.easy_agent(board.visible_board)
         elif self.difficulty == 1:
             click = self.medium_agent(board.visible_board)
         elif self.difficulty == 2:
@@ -41,9 +41,12 @@ class Agent():
 
         return click #(x, y) tuple to click
     
-    def easy_agent(self):
+    def easy_agent(self, visible_board):
         #function that returns easy mode (x, y) tuple
-        pass
+        coords = (random.randint(0, len(visible_board)-1), random.randint(0, len(visible_board)-1))
+        while visible_board[coords[0]][coords[1]] != BoardPiece.UNKNOWN:
+            coords = (random.randint(0, len(visible_board)-1), random.randint(0, len(visible_board)-1))
+        return coords
 
     def find_neighbors(self, x, y, board):
         #function that returns list of (x, y) tuples of neighbors
