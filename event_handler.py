@@ -31,19 +31,14 @@ from constants import CELL_SIZE, GRID_OFFSET_X, GRID_OFFSET_Y, MAX_MINES, MIN_MI
 from time import sleep as sleep
 import agents
 
-
-WIN_RESTART_GAME = ButtonClass.ButtonTypes.WIN_RESTART_GAME
-LOSE_RESTART_GAME = ButtonClass.ButtonTypes.LOSE_RESTART_GAME
-MIDGAME_RESTART_GAME = ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME
-
-
+#TODO add way to select agent difficulty
+#TODO add way to select if playing vs agent or auto-solve
 
 class EventHandler:
     """Handles Pygame events and dispatches game actions."""
     # Thinking no member variables, just member functions to implement functionality
 
     def HandleEvent(event: pygame.event, game: Board):
-        agent_turn = False
         """Process a single Pygame event and apply changes to the game state.
             Responsibilities:
                 - Handle quit events and terminate the program

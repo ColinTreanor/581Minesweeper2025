@@ -25,6 +25,9 @@ Author: Team 17
 Creation Date: 9/3/2025
 """
 
+
+#TODO Reset agent pos on a new game
+
 from board import *
 import pygame
 import button as ButtonClass
