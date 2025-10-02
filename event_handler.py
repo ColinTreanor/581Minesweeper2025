@@ -99,7 +99,7 @@ class EventHandler:
                         r = gy // CELL_SIZE
                         space_revealed = game.RevealSpace((r, c))
                         if space_revealed:
-                            agent_move = agents.Agent(2).run_agent(game.visible_board, game.actual_board)
+                            agent_move = agents.Agent(3).run_agent(game)
                             if agent_move:  # Check if agent found a valid move
                                 x_agent, y_agent = agent_move
                                 game.move_agent((x_agent, y_agent))

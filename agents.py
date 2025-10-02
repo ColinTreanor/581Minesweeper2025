@@ -31,13 +31,13 @@ class Agent():
         if difficulty == 1:
             self.medium_setup()
 
-    def run_agent(self, visible_state, actual_state):
+    def run_agent(self, board : Board):
         if self.difficulty == 0:
             click = self.easy_agent()
         elif self.difficulty == 1:
-            click = self.medium_agent(visible_state)
+            click = self.medium_agent(board.visible_board)
         elif self.difficulty == 2:
-            click = self.hard_agent(visible_state, actual_state)
+            click = self.hard_agent(board.visible_board, board.actual_board)
 
         return click #(x, y) tuple to click
     
@@ -56,11 +56,17 @@ class Agent():
                 if 0 <= nx < len(board) and 0 <= ny < len(board[0]):
                     neighbors.append((nx, ny))
         return neighbors
+    def medium_setup(self):
+        self.flagged = set() 
+        #setting up class variables for medium agent
+        pass
 
     def medium_agent(self, visible_board):
         #function that returns either a tuple to click, or None if there is no other option
         for x in range(len(visible_board)):
             for y in range(len(visible_board[0])):
+                if visible_board[x][y] == BoardPiece.MINE:
+                    return None
                 if visible_board[x][y] != BoardPiece.UNKNOWN and visible_board[x][y] != BoardPiece.FLAG:
                     neighbors = self.find_neighbors(x, y, visible_board)
                     unknown_neighbors = [(nx, ny) for (nx, ny) in neighbors if visible_board[nx][ny] == BoardPiece.UNKNOWN and (nx, ny) not in self.flagged]
@@ -73,6 +79,7 @@ class Agent():
                             return (nx, ny)  # Return the coordinates of a safe square to click
 
                     # If the number of unknown neighbors equals the number on the square minus the number of flagged neighbors, all unknown neighbors are bombs
+                    print(visible_board[x][y], len(flagged_neighbors), len(unknown_neighbors))
                     if len(unknown_neighbors) > 0 and len(unknown_neighbors) == visible_board[x][y] - len(flagged_neighbors):
                         for (nx, ny) in unknown_neighbors:
                             print("Flagging at", (nx, ny))
@@ -85,13 +92,6 @@ class Agent():
             return random_choice  # If no safe moves found, return a random covered cell to click
         return None  # If no moves found, return None
     
-
-
-
-    def medium_setup(self):
-        self.flagged = set() 
-        #setting up class variables for medium agent
-        pass
 
     def hard_agent(self, visible_board, actual_board):
         #function that returns hard mode (x, y) tuple
@@ -136,4 +136,4 @@ def testing():
         print("You Win!")
     elif board.state == GameState.LOSE_SCREEN:
         print("Game Over")
-# testing()
+#testing()
