@@ -288,7 +288,7 @@ class Board:
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                    winner.play() # this plays with the you win message 
+                    winner.play() # this plays with the "you win" message 
                     return self.visible_board
                 return self.visible_board
 

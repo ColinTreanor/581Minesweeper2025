@@ -29,7 +29,6 @@ from board import *
 import button as ButtonClass
 from constants import CELL_SIZE, GRID_OFFSET_X, GRID_OFFSET_Y, MAX_MINES, MIN_MINES
 
-
 class EventHandler:
     """Handles Pygame events and dispatches game actions."""
     # Thinking no member variables, just member functions to implement functionality
@@ -72,7 +71,7 @@ class EventHandler:
                         # print(f"Button Type: {button.mButtonType}")
                         match button.mButtonType:
                             case ButtonClass.ButtonTypes.WIN_RESTART_GAME | ButtonClass.ButtonTypes.LOSE_RESTART_GAME | ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME:
-                                menuSound.play() # 
+                                menuSound.play() # this will restart the game
                                 game.ResetBoard()
                             case ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW:
                                 # only update mines if it is less than max mines value
@@ -85,7 +84,7 @@ class EventHandler:
                                 if game.mines > MIN_MINES:
                                     game.DecramentMines()
                             case ButtonClass.ButtonTypes.MINE_SELECT_START:
-                                menuSound.play() 
+                                menuSound.play() # start the game!
                                 game.state = GameState.PLAYING
                         break
 
