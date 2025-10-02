@@ -58,33 +58,38 @@ class Agent():
         return neighbors
 
     def medium_agent(self, visible_board):
-        #function that returns either a tuple to click, a tuple to flag, or None if there is no other option
+        #function that returns either a tuple to click, or None if there is no other option
         for x in range(len(visible_board)):
             for y in range(len(visible_board[0])):
                 if visible_board[x][y] != BoardPiece.UNKNOWN and visible_board[x][y] != BoardPiece.FLAG:
                     neighbors = self.find_neighbors(x, y, visible_board)
-                    unknown_neighbors = [(nx, ny) for (nx, ny) in neighbors if visible_board[nx][ny] == BoardPiece.UNKNOWN]
-                    flagged_neighbors = [(nx, ny) for (nx, ny) in neighbors if visible_board[nx][ny] == BoardPiece.FLAG]
+                    unknown_neighbors = [(nx, ny) for (nx, ny) in neighbors if visible_board[nx][ny] == BoardPiece.UNKNOWN and (nx, ny) not in self.flagged]
+                    flagged_neighbors = [(nx, ny) for (nx, ny) in neighbors if (visible_board[nx][ny] == BoardPiece.FLAG or (nx, ny) in self.flagged)]
 
                     # If the number of flagged neighbors equals the number on the square, all other unknown neighbors are safe to click
                     if len(flagged_neighbors) == visible_board[x][y]:
                         for (nx, ny) in unknown_neighbors:
-                            return "click", (nx, ny)  # Return the coordinates of a safe square to click
+                            print("Clicking at", (nx, ny))
+                            return (nx, ny)  # Return the coordinates of a safe square to click
 
                     # If the number of unknown neighbors equals the number on the square minus the number of flagged neighbors, all unknown neighbors are bombs
                     if len(unknown_neighbors) > 0 and len(unknown_neighbors) == visible_board[x][y] - len(flagged_neighbors):
                         for (nx, ny) in unknown_neighbors:
-                            return "flag", (nx, ny)  # Return the coordinates of a square to flag
-        covered_cells = [(x, y) for x in range(len(visible_board)) for y in range(len(visible_board[0])) if visible_board[x][y] == BoardPiece.UNKNOWN]
+                            print("Flagging at", (nx, ny))
+                            self.flagged.add((nx, ny)) # Mark these as flagged
+                    
+        covered_cells = [(x, y) for x in range(len(visible_board)) for y in range(len(visible_board[0])) if visible_board[x][y] == BoardPiece.UNKNOWN and (x, y) not in self.flagged]
         if len(covered_cells) > 0:
             random_choice = random.choice(covered_cells)
-            return "force_click", random_choice  # If no safe moves found, return a random covered cell to click
+            print("No safe moves found, clicking at random covered cell", random_choice)
+            return random_choice  # If no safe moves found, return a random covered cell to click
         return None  # If no moves found, return None
     
 
 
 
     def medium_setup(self):
+        self.flagged = set() 
         #setting up class variables for medium agent
         pass
 
@@ -106,30 +111,20 @@ def testing():
     board = Board()
     actual_board = board.actual_board
     board.GenerateBoard((5,5))
-    play = 0
+    move = 0
     agent = Agent(1)
-    while play != None:
-        play = agent.run_agent(board.visible_board)
-        if play is None:
+    while move != None:
+        move = agent.run_agent(board.visible_board)
+        if move is None:
             break  # no moves left
-        action, move = play
         # Check bomb hit
-        print("Agent chose to", action, "at", move)
-        if (action == "force_click" or action == "click") and actual_board[move[0]][move[1]] == BoardPiece.MINE:
+        print("Agent is clicking at", move)
+        if actual_board[move[0]][move[1]] == BoardPiece.MINE:
             print("Agent hit a mine at", move)
             board.state = GameState.LOSE_SCREEN
             break 
-        if play != None or board.state != GameState.PLAYING:
-            action, move = play
-            if action == "click":
-                print("Actual Clicking: ", move)
-                board.RevealSpace((move[0], move[1]))
-            elif action == "flag":
-                print("Flagging: ", move)
-                board.PlaceFlag((move[0], move[1]))
-            elif action == "force_click":
-                print("Force Clicking: ", move)
-                board.RevealSpace((move[0], move[1]))
+        if move != None or board.state != GameState.PLAYING:
+            board.RevealSpace((move[0], move[1]))
             print()
             print("Visible Board:")
             board.PrintVisibleBoard()
