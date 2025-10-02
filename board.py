@@ -40,6 +40,7 @@ explosion= pygame.mixer.Sound("./soundfiles/explosion.mp3")
 winner=pygame.mixer.Sound("./soundfiles/winner.mp3")
 welcome=pygame.mixer.Sound("./soundfiles/gamestart.mp3")
 menuSound=pygame.mixer.Sound("./soundfiles/menuselect.mp3")
+
 class BoardPiece(Enum):
     """Enumeration class to represent different types of board spaces
     
@@ -269,14 +270,14 @@ class Board:
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE  # Show the mine
                 self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                 self.state = GameState.LOSE_SCREEN  # Set game state to loss
-                explosion.play()
+                explosion.play() # sound when user clicks on a bomb tile
                 return self.visible_board
                 
             case BoardPiece.ZERO:
                 # Empty space with no adjacent mines - auto-reveal surrounding area
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = 0  # Show as empty space
                 #safe tile 
-                ding.play()
+                ding.play() # plays when clicking on a safe tile (blank)
 
                 # Recursively reveal all adjacent spaces (flood fill algorithm)
                 for x in range(max(0, spaceIdx[0] - 1), min(spaceIdx[0] + 2, self.board_size)):
@@ -287,7 +288,7 @@ class Board:
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                    winner.play()
+                    winner.play() # this plays with the you win message 
                     return self.visible_board
                 return self.visible_board
 
@@ -299,9 +300,9 @@ class Board:
                 if(self.CheckWin()):
                     self.state = GameState.WIN_SCREEN  # Set game state to victory
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                    winner.play()
+                    winner.play() # plays when user wins the games
                     return self.visible_board
-                ding.play() # Sound effect for selecting clear tile
+                ding.play() # Sound effect for selecting safe tile / number tile 
                 return self.visible_board
 
 

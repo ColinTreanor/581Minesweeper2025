@@ -65,7 +65,7 @@ def main():
 
 
    # call the welcome sound here!
-    welcome.play()
+    welcome.play() # plays when typing in the command to start game
     #setup buttons
     UIEngine.InitializeButtonList()
 
