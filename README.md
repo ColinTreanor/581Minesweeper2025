@@ -1,6 +1,6 @@
 # EECS 581 Minesweeper Project Part 2
 ### Task: Improve another teams Minesweeper game
-To enhace the minesweeper game we were given we implemented the following
+To enhace the Minesweeper game we were given, we implemented the following
 
 1. Added sound effects to the game
 2. Added options to play singleplayer, multiplayer, or AI mode
