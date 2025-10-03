@@ -32,6 +32,7 @@ class Agent():
             self.medium_setup()
 
     def run_agent(self, board : Board):
+        click = None  # Initialize click to avoid UnboundLocalError
         if self.difficulty == 0:
             click = self.easy_agent(board.visible_board)
         elif self.difficulty == 1:

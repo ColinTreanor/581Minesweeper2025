@@ -27,7 +27,7 @@ import pygame, sys
 from pygame.locals import *
 from board import *
 import button as ButtonClass
-from constants import CELL_SIZE, GRID_OFFSET_X, GRID_OFFSET_Y, MAX_MINES, MIN_MINES
+from constants import CELL_SIZE, GRID_OFFSET_X, GRID_OFFSET_Y, MAX_MINES, MIN_MINES, AgentDifficulty
 from time import sleep as sleep
 import agents
 
@@ -89,6 +89,14 @@ class EventHandler:
                             case ButtonClass.ButtonTypes.MINE_SELECT_START:
                                 game.state = GameState.PLAYING 
                                 game.active_agent = True #COMMENT OUT IF YOU WANT TO PLAY WITHOUT AGENT
+                                
+                                # For auto-solver mode, make the first move to start the board generation
+                                from constants import GameMode
+                                if game.game_mode == GameMode.AUTO_SOLVER:
+                                    # Make an initial random move to generate the board
+                                    import random
+                                    first_move = (random.randint(0, game.board_size-1), random.randint(0, game.board_size-1))
+                                    game.move_agent(first_move)
                             case ButtonClass.ButtonTypes.GAME_MODE_TOGGLE:
                                 EventHandler._CycleGameMode(game)
                         break
@@ -108,11 +116,19 @@ class EventHandler:
                         r = gy // CELL_SIZE
                         space_revealed = game.RevealSpace((r, c))
                         if space_revealed:
-                            agent_move = agents.Agent(2).run_agent(game)
+                            # Map bot difficulty to numeric values for Agent class
+                            
+                            difficulty_map = {
+                                AgentDifficulty.EASY: 0,
+                                AgentDifficulty.MEDIUM: 1,
+                                AgentDifficulty.HARD: 2
+                            }
+                            agent_difficulty = difficulty_map.get(game.agent_difficulty, 1)  # Default to medium
+                            agent_move = agents.Agent(agent_difficulty).run_agent(game)
                             if agent_move:  # Check if agent found a valid move
                                 x_agent, y_agent = agent_move
                                 game.move_agent((x_agent, y_agent))
-                                game.RevealSpace((x_agent, y_agent))
+                                #game.RevealSpace((x_agent, y_agent))
 
 
                 if (game.state == GameState.PLAYING):
@@ -164,15 +180,10 @@ class EventHandler:
             position (tuple): (x, y) click coordinates.
             game (Board): Game board instance to update.
         """
-        from constants import GameMode, BotDifficulty
+        from constants import GameMode, AgentDifficulty
         
-        dropdown = ButtonClass.bot_difficulty_dropdown
-        if dropdown is None:
-            return
-            
-        # Only handle dropdown for multiplayer and auto solver modes
-        if game.game_mode not in [GameMode.MULTIPLAYER, GameMode.AUTO_SOLVER]:
-            return
+        dropdown = ButtonClass.agent_difficulty_dropdown
+
         
         # Check if main dropdown button was clicked
         if dropdown.main_rect.collidepoint(position):
@@ -184,7 +195,45 @@ class EventHandler:
         if clicked_option:
             dropdown.select_option(clicked_option)
             # Update game board's bot difficulty
-            for difficulty in BotDifficulty:
+            for difficulty in AgentDifficulty:
                 if difficulty.value == clicked_option:
-                    game.bot_difficulty = difficulty
+                    game.agent_difficulty = difficulty
                     break
+    
+    def HandleAutoSolver(game: Board):
+        """Handle auto-solver mode where the agent plays automatically.
+        
+        This method should be called from the main game loop to allow the agent
+        to make moves automatically when in AUTO_SOLVER mode.
+        
+        Args:
+            game (Board): Game board instance to update.
+            
+        Returns:
+            bool: True if the agent made a move, False otherwise.
+        """
+        from constants import GameMode, AgentDifficulty
+        
+        # Only run auto-solver in AUTO_SOLVER mode and when game is playing
+        if game.game_mode != GameMode.AUTO_SOLVER or game.state != GameState.PLAYING:
+            return False
+            
+        # Map bot difficulty to numeric values for Agent class
+        difficulty_map = {
+            AgentDifficulty.EASY: 0,
+            AgentDifficulty.MEDIUM: 1,
+            AgentDifficulty.HARD: 2
+        }
+        agent_difficulty = difficulty_map.get(game.agent_difficulty, 1)  # Default to medium
+        
+        # Get agent's move
+        agent_move = agents.Agent(agent_difficulty).run_agent(game)
+        if agent_move:  # Check if agent found a valid move
+            x_agent, y_agent = agent_move
+            # Make the move and update agent position if it exists
+            if hasattr(game, 'move_agent'):
+                game.move_agent((x_agent, y_agent))
+            game.RevealSpace((x_agent, y_agent))
+            return True
+        
+        return False

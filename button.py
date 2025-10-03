@@ -38,10 +38,10 @@ class ButtonTypes(Enum):
             WIN_RESTART_GAME (int): Restart after a win.
             LOSE_RESTART_GAME (int): Restart after a loss.
             GAME_MODE_TOGGLE (int): Toggle between game modes.
-            BOT_DIFFICULTY_DROPDOWN (int): Open bot difficulty dropdown.
-            BOT_DIFFICULTY_EASY (int): Set bot difficulty to easy.
-            BOT_DIFFICULTY_MEDIUM (int): Set bot difficulty to medium.
-            BOT_DIFFICULTY_HARD (int): Set bot difficulty to hard.
+            agent_difficulty_DROPDOWN (int): Open bot difficulty dropdown.
+            agent_difficulty_EASY (int): Set bot difficulty to easy.
+            agent_difficulty_MEDIUM (int): Set bot difficulty to medium.
+            agent_difficulty_HARD (int): Set bot difficulty to hard.
     """
     #just enum class to represent pieces
     MINE_SELECT_UP_ARROW = 0
@@ -54,10 +54,10 @@ class ButtonTypes(Enum):
     LOSE_RESTART_GAME = 5
     # Game mode and bot difficulty buttons
     GAME_MODE_TOGGLE = 6
-    BOT_DIFFICULTY_DROPDOWN = 7
-    BOT_DIFFICULTY_EASY = 8
-    BOT_DIFFICULTY_MEDIUM = 9
-    BOT_DIFFICULTY_HARD = 10
+    agent_difficulty_DROPDOWN = 7
+    agent_difficulty_EASY = 8
+    agent_difficulty_MEDIUM = 9
+    agent_difficulty_HARD = 10
 
 class ButtonInfo():
     """Stores information about a UI button.
@@ -160,4 +160,4 @@ ButtonList = [
 ]
 
 # Global dropdown for bot difficulty selection
-bot_difficulty_dropdown = None
+agent_difficulty_dropdown = None

@@ -110,7 +110,7 @@ class GameMode(Enum):
     MULTIPLAYER = "Multiplayer"
     AUTO_SOLVER = "Auto Solver"
 
-class BotDifficulty(Enum):
+class AgentDifficulty(Enum):
     """Enumeration for bot difficulty levels"""
     EASY = "Easy"
     MEDIUM = "Medium"

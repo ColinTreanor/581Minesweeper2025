@@ -200,9 +200,9 @@ class UIEngine:
         ))
         
         # Initialize bot difficulty dropdown
-        from constants import BotDifficulty
-        difficulty_options = [diff.value for diff in BotDifficulty]
-        ButtonClass.bot_difficulty_dropdown = ButtonClass.DropdownInfo(
+        from constants import AgentDifficulty
+        difficulty_options = [diff.value for diff in AgentDifficulty]
+        ButtonClass.agent_difficulty_dropdown = ButtonClass.DropdownInfo(
             difficulty_options, 
             (SCREEN_WIDTH // 2 - 60, SCREEN_HEIGHT // 2 + 50)
         )
@@ -352,8 +352,12 @@ class UIEngine:
         minesweeper_title = pygame.transform.scale_by(minesweeper_title, .75)
         surface.blit(minesweeper_title, (x_AXIS, (board.board_size * cell_size + 10)))
         '''
-        # displays the playing status
-        title = big_font.render("Playing ...", True, BLACK)
+        # displays the playing status - show different text for auto-solver
+        from constants import GameMode
+        if board.game_mode == GameMode.AUTO_SOLVER:
+            title = big_font.render("Auto-Solving ...", True, (0, 150, 0))  # Green color for auto-solver
+        else:
+            title = big_font.render("Playing ...", True, BLACK)
         surface.blit(title, (x_AXIS, board.board_size * cell_size + TEXT_OFFSET_TITLE + grid_offset_y))
 
         # displays the time
@@ -575,7 +579,7 @@ class UIEngine:
         
         # Only show dropdown for multiplayer and auto solver modes
         if board.game_mode in [GameMode.MULTIPLAYER, GameMode.AUTO_SOLVER]:
-            dropdown = ButtonClass.bot_difficulty_dropdown
+            dropdown = ButtonClass.agent_difficulty_dropdown
             if dropdown is not None:
                 # Render main dropdown button
                 button_color = (200, 200, 200) if not dropdown.is_open else (180, 180, 180)

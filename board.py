@@ -27,7 +27,7 @@ Creation Date: 9/10/2025
 
 from enum import Enum  # Python standard library for enumeration types
 import random  # Python standard library for random number generation
-from constants import MAX_MINES, MIN_MINES, GameMode, BotDifficulty  # Local constants module for mine limits
+from constants import MAX_MINES, MIN_MINES, GameMode, AgentDifficulty  # Local constants module for mine limits
 from pygame import time  # Pygame library for game timing functionality
 
 class BoardPiece(Enum):
@@ -110,12 +110,13 @@ class Board:
         self.StartTime = 0
         self.board_generated: bool = False
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
-
         self.actual_board: list = [[BoardPiece.ZERO for _ in range(self.board_size)] for _ in range(self.board_size)]
+        self.auto_solve_timer: int = 0  # Timer for auto-solve mode delays 
+        self.auto_solve_delay: int = 1  # Delay in milliseconds between AI moves 
         
         # Game mode settings
         self.game_mode: GameMode = GameMode.SINGLE_PLAYER
-        self.bot_difficulty: BotDifficulty = BotDifficulty.MEDIUM
+        self.agent_difficulty: AgentDifficulty = AgentDifficulty.EASY
 
     def CalculateDuration(self):
         if not self.board_generated:
@@ -370,3 +371,26 @@ class Board:
     def move_agent(self, rc):
         r, c = rc
         self.prev_click = [r, c]
+
+    # def UpdateAutoSolve(self): 
+    #     """Handle auto-solve mode AI moves with timing. 
+         
+    #     Returns: 
+    #         bool: True if an AI move was made, False otherwise 
+    #     """         
+    #     if (self.state == GameState.PLAYING and  
+    #         self.active_agent and  
+    #         self.game_mode == GameMode.AUTO_SOLVER): 
+    #         print("Auto-solve mode active")
+    #         current_time = time.get_ticks() 
+    #         if current_time - self.auto_solve_timer >= self.auto_solve_delay: 
+    #             # Import here to avoid circular import 
+    #             import agents 
+
+    #             agent_move = agents.Agent(self.agent_difficulty).run_agent(self)
+    #             if agent_move:  # Check if agent found a valid move
+    #                 x_agent, y_agent = agent_move
+    #                 self.move_agent((x_agent, y_agent)) 
+    #                 self.auto_solve_timer = current_time 
+    #                 return True 
+    #     return False
