@@ -87,11 +87,16 @@ class EventHandler:
                                 if game.mines > MIN_MINES:
                                     game.DecrementMines()
                             case ButtonClass.ButtonTypes.MINE_SELECT_START:
-                                game.state = GameState.PLAYING 
-                                game.active_agent = True #COMMENT OUT IF YOU WANT TO PLAY WITHOUT AGENT
-                                
-                                # For auto-solver mode, make the first move to start the board generation
                                 from constants import GameMode
+
+                                if game.game_mode == GameMode.SINGLE_PLAYER:
+                                    game.active_agent = False
+                                else:
+                                    game.active_agent = True
+                                
+                                
+                                game.state = GameState.PLAYING 
+                                # For auto-solver mode, make the first move to start the board generation
                                 if game.game_mode == GameMode.AUTO_SOLVER:
                                     # Make an initial random move to generate the board
                                     import random
