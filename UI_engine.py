@@ -405,15 +405,21 @@ class UIEngine:
         for c in range(board.board_size):
             col_label = font.render(letters[c], True, BLACK)
             surface.blit(col_label, (grid_offset_x + c * cell_size + cell_size // 3, 10))
-
-        if board.prev_click != [0, 0]:
-            done = UIEngine.move_agent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1], board.prev_click[0], board.prev_click[1])
+        if board.prev_click is not None:
+            r, c = board.prev_click
+            done = UIEngine.move_agent(
+                 surface,
+                 UIEngine.agent_pos[0], UIEngine.agent_pos[1],
+                 r, c
+            )
             if done:
-                board.RevealSpace(board.prev_click)
-                board.prev_click = [0, 0]
+                board.RevealSpace((r, c))
+                board.prev_click = None  # back to sentinel after we finish the move
                 UIEngine._DrawAgent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1])
         else:
             UIEngine._DrawAgent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1])
+
+
 
     def DisplayWinScreen(surface: pygame.display, board, time):
         """Render the win screen.

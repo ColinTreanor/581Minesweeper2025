@@ -99,7 +99,7 @@ class Board:
 
     def __init__(self):
         self.ResetBoard() # set board to default values
-        self.prev_click = [0, 0]
+        self.prev_click = None
 
     def ResetBoard(self):
         # sets b
@@ -113,7 +113,7 @@ class Board:
         self.actual_board: list = [[BoardPiece.ZERO for _ in range(self.board_size)] for _ in range(self.board_size)]
         self.auto_solve_timer: int = 0  # Timer for auto-solve mode delays 
         self.auto_solve_delay: int = 1  # Delay in milliseconds between AI moves 
-        
+        self.prev_click = None
         # Game mode settings
         self.game_mode: GameMode = GameMode.SINGLE_PLAYER
         self.agent_difficulty: AgentDifficulty = AgentDifficulty.EASY
