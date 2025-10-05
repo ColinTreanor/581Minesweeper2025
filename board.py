@@ -338,8 +338,7 @@ class Board:
                         else:
                             self.state = GameState.WIN_SCREEN
                             winner.play()
-                    self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                    winner.play() # this plays with the "you win" message 
+                    self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time 
                     return True  # Return True indicating successful reveal
                 return True  # Return True indicating successful reveal
 
