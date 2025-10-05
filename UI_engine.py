@@ -407,19 +407,22 @@ class UIEngine:
         for c in range(board.board_size):
             col_label = font.render(letters[c], True, BLACK)
             surface.blit(col_label, (grid_offset_x + c * cell_size + cell_size // 3, 10))
-        if board.prev_click is not None:
-            r, c = board.prev_click
-            done = UIEngine.move_agent(
-                 surface,
-                 UIEngine.agent_pos[0], UIEngine.agent_pos[1],
-                 r, c
-            )
-            if done:
-                board.RevealSpace((r, c))
-                board.prev_click = None  # back to sentinel after we finish the move
+        
+        # Only draw agent in multiplayer and auto-solver modes
+        if board.game_mode in [GameMode.MULTIPLAYER, GameMode.AUTO_SOLVER]:
+            if board.prev_click is not None:
+                r, c = board.prev_click
+                done = UIEngine.move_agent(
+                     surface,
+                     UIEngine.agent_pos[0], UIEngine.agent_pos[1],
+                     r, c
+                )
+                if done:
+                    board.RevealSpace((r, c))
+                    board.prev_click = None  # back to sentinel after we finish the move
+                    UIEngine._DrawAgent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1])
+            else:
                 UIEngine._DrawAgent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1])
-        else:
-            UIEngine._DrawAgent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1])
 
 
 
