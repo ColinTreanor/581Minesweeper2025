@@ -27,7 +27,7 @@ Creation Date: 9/10/2025
 
 from enum import Enum  # Python standard library for enumeration types
 import random  # Python standard library for random number generation
-from constants import MAX_MINES, MIN_MINES  # Local constants module for mine limits
+from constants import MAX_MINES, MIN_MINES, GameMode, AgentDifficulty  # Local constants module for mine limits
 from pygame import time  # Pygame library for game timing functionality
 import pygame
 
@@ -62,6 +62,18 @@ class BoardPiece(Enum):
     SEVEN = 7     # Seven adjacent mines
     EIGHT = 8     # Eight adjacent mines (maximum possible)
 
+    def __sub__(self, other):
+        if isinstance(other, (BoardPiece, int)):
+            return self.value - (other.value if isinstance(other, BoardPiece) else other)
+        return NotImplemented
+    
+    def __eq__(self, other):
+        if isinstance(other, BoardPiece):
+            return self.value == other.value
+        elif isinstance(other, (int, str)):
+            return self.value == other
+        return NotImplemented
+    
     def increment(self):
         """Increments the numerical value of non-mine spaces
         
@@ -98,16 +110,35 @@ class Board:
 
     def __init__(self):
         self.ResetBoard() # set board to default values
+        self.prev_click = None
 
     def ResetBoard(self):
         # sets b
         self.mines: int = 10
         self.flags: int = 10
         self.state: GameState = GameState.START_SCREEN
+        self.active_agent: bool = False
         self.StartTime = 0
         self.board_generated: bool = False
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
         self.actual_board: list = [[BoardPiece.ZERO for _ in range(self.board_size)] for _ in range(self.board_size)]
+        self.auto_solve_timer: int = 0  # Timer for auto-solve mode delays 
+        self.auto_solve_delay: int = 1 
+        self.prev_click = None
+        # Game mode settings
+        self.game_mode: GameMode = GameMode.SINGLE_PLAYER
+        self.agent_difficulty: AgentDifficulty = AgentDifficulty.EASY
+        self.ai_turn = False
+        
+        # Reset the UI dropdown to match the reset difficulty
+        import button as ButtonClass
+        if ButtonClass.agent_difficulty_dropdown is not None:
+            ButtonClass.agent_difficulty_dropdown.selected_option = AgentDifficulty.EASY.value
+        
+        # Reset agent position in UI
+        import UI_engine
+        UI_engine.UIEngine.agent_pos = [30, 30]
+        UI_engine.UIEngine.explosion_played = False
 
     def CalculateDuration(self):
         if not self.board_generated:
@@ -203,7 +234,11 @@ class Board:
                     continue
                 # Print actual value for revealed spaces
                 else: 
-                    print(self.visible_board[x][y].value, end = ' ')
+                    # Handle both BoardPiece enum values and direct integer values
+                    if hasattr(self.visible_board[x][y], 'value'):
+                        print(self.visible_board[x][y].value, end = ' ')
+                    else:
+                        print(self.visible_board[x][y], end = ' ')
 
             print()  # New line after each row
 
@@ -240,13 +275,13 @@ class Board:
             spaceIdx (tuple): (row, col) coordinates to reveal
             
         Returns:
-            list: Updated visible board state, or None if no change
+            bool: True if space was successfully revealed, False if already revealed/flagged or invalid coordinates
         """
         r, c = spaceIdx  # Extract row and column coordinates
 
         # Validate coordinates are within board bounds
         if not (0 <= r < self.board_size and 0 <= c < self.board_size):
-            return  # Exit if coordinates are invalid
+            return False  # Return False if coordinates are invalid
 
         # Get the actual content at the specified location
         revealedSpace = self.actual_board[r][c]
@@ -260,7 +295,7 @@ class Board:
 
         # Only reveal unknown spaces (ignore already revealed or flagged spaces)
         if(self.visible_board[spaceIdx[0]][spaceIdx[1]] != BoardPiece.UNKNOWN):
-            return  # Exit if space is already revealed or flagged
+            return False  # Return False if space is already revealed or flagged
 
         # Handle different types of revealed spaces
         match revealedSpace:
@@ -269,9 +304,15 @@ class Board:
                 # Player hit a mine - game over
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE  # Show the mine
                 self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                self.state = GameState.LOSE_SCREEN  # Set game state to loss
-                explosion.play() # sound when user clicks on a bomb tile
-                return self.visible_board
+                if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
+                    self.state = GameState.LOSE_SCREEN  # Set game state to loss
+                    explosion.play() # sound when user clicks on a bomb tile
+                else:
+                    if self.ai_turn:
+                        self.state = GameState.WIN_SCREEN #TODO add sound to win if there is
+                    else:
+                        self.state = GameState.LOSE_SCREEN
+                        explosion.play() # sound when user clicks on a bomb tile
                 
             case BoardPiece.ZERO:
                 # Empty space with no adjacent mines - auto-reveal surrounding area
@@ -286,11 +327,17 @@ class Board:
 
                 # Check if revealing this area completed the game
                 if(self.CheckWin()):
-                    self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
+                        self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    else:
+                        if self.ai_turn:
+                            self.state = GameState.LOSE_SCREEN
+                        else:
+                            self.state = GameState.WIN_SCREEN
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                     winner.play() # this plays with the "you win" message 
-                    return self.visible_board
-                return self.visible_board
+                    return True  # Return True indicating successful reveal
+                return True  # Return True indicating successful reveal
 
             case _:  # Default case - numbered space (1-8 adjacent mines)
                 # Reveal the number of adjacent mines
@@ -298,12 +345,17 @@ class Board:
 
                 # Check if this revelation completed the game
                 if(self.CheckWin()):
-                    self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
+                        self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    else:
+                        if self.ai_turn:
+                            self.state = GameState.LOSE_SCREEN
+                        else:
+                            self.state = GameState.WIN_SCREEN
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                     winner.play() # plays when user wins the games
-                    return self.visible_board
-                ding.play() # Sound effect for selecting safe tile / number tile 
-                return self.visible_board
+                    return True  # Return True indicating successful reveal
+                return True  # Return True indicating successful reveal
 
 
     def ReturnVisableBoard(self):
@@ -325,7 +377,7 @@ class Board:
         self.mines = mines    # Set mine count
         self.flags = mines    # Set flag count to match mine count
 
-    def IncrimentMines(self):
+    def IncrementMines(self):
         """Increase mine and flag count by 1
         
         Used for difficulty adjustment during game setup.
@@ -333,7 +385,7 @@ class Board:
         self.mines += 1  # Increment mine count
         self.flags += 1  # Increment available flags to match
 
-    def DecramentMines(self):
+    def DecrementMines(self):
         """Decrease mine and flag count by 1
         
         Used for difficulty adjustment during game setup.
@@ -360,3 +412,30 @@ class Board:
                     return False  # Win condition not met
                 
         return True  # All non-mine spaces revealed - player wins!
+    
+    def move_agent(self, rc):
+        r, c = rc
+        self.prev_click = [r, c]
+
+    # def UpdateAutoSolve(self): 
+    #     """Handle auto-solve mode AI moves with timing. 
+         
+    #     Returns: 
+    #         bool: True if an AI move was made, False otherwise 
+    #     """         
+    #     if (self.state == GameState.PLAYING and  
+    #         self.active_agent and  
+    #         self.game_mode == GameMode.AUTO_SOLVER): 
+    #         print("Auto-solve mode active")
+    #         current_time = time.get_ticks() 
+    #         if current_time - self.auto_solve_timer >= self.auto_solve_delay: 
+    #             # Import here to avoid circular import 
+    #             import agents 
+
+    #             agent_move = agents.Agent(self.agent_difficulty).run_agent(self)
+    #             if agent_move:  # Check if agent found a valid move
+    #                 x_agent, y_agent = agent_move
+    #                 self.move_agent((x_agent, y_agent)) 
+    #                 self.auto_solve_timer = current_time 
+    #                 return True 
+    #     return False
