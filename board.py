@@ -117,6 +117,7 @@ class Board:
         # Game mode settings
         self.game_mode: GameMode = GameMode.SINGLE_PLAYER
         self.agent_difficulty: AgentDifficulty = AgentDifficulty.EASY
+        self.ai_turn = False
         
         # Reset the UI dropdown to match the reset difficulty
         import button as ButtonClass
@@ -290,7 +291,13 @@ class Board:
                 # Player hit a mine - game over
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE  # Show the mine
                 self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                self.state = GameState.LOSE_SCREEN  # Set game state to loss
+                if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
+                    self.state = GameState.LOSE_SCREEN  # Set game state to loss
+                else:
+                    if self.ai_turn:
+                        self.state = GameState.WIN_SCREEN
+                    else:
+                        self.state = GameState.LOSE_SCREEN
                 return True  # Return True indicating successful reveal (even though it's a mine)
                 
             case BoardPiece.ZERO:
@@ -304,7 +311,13 @@ class Board:
 
                 # Check if revealing this area completed the game
                 if(self.CheckWin()):
-                    self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
+                        self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    else:
+                        if self.ai_turn:
+                            self.state = GameState.LOSE_SCREEN
+                        else:
+                            self.state = GameState.WIN_SCREEN
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                     return True  # Return True indicating successful reveal
 
@@ -316,7 +329,13 @@ class Board:
 
                 # Check if this revelation completed the game
                 if(self.CheckWin()):
-                    self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
+                        self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    else:
+                        if self.ai_turn:
+                            self.state = GameState.LOSE_SCREEN
+                        else:
+                            self.state = GameState.WIN_SCREEN
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                     return True  # Return True indicating successful reveal
 

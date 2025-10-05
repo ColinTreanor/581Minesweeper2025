@@ -419,6 +419,7 @@ class UIEngine:
                 )
                 if done:
                     board.RevealSpace((r, c))
+                    board.ai_turn = False
                     board.prev_click = None  # back to sentinel after we finish the move
                     UIEngine._DrawAgent(surface, UIEngine.agent_pos[0], UIEngine.agent_pos[1])
             else:
@@ -440,7 +441,12 @@ class UIEngine:
         surface.fill(START_BG_COLOR)
         UIEngine.DisplayEndGameBoard(surface, board)
         WinFont = pygame.font.SysFont(None, 56)
-        WinText = 'You WIN!'
+        if board.game_mode == GameMode.SINGLE_PLAYER:
+            WinText = "You Won!"
+        elif board.game_mode == GameMode.MULTIPLAYER:
+            WinText = "You Won, AI lost!"
+        elif board.game_mode == GameMode.AUTO_SOLVER:
+            WinText = "Autosolved!"
         WinTextSurface = WinFont.render(WinText, False, GREEN)
         WinTextSize = WinFont.size(WinText)
         mid_font = pygame.font.SysFont(None, 40)
@@ -454,7 +460,7 @@ class UIEngine:
         surface.blit(emoji_win, emoji_rect) """
         return
 
-    def DisplayLoseScreen(surface : pygame.display, board, time):
+    def DisplayLoseScreen(surface : pygame.display, board : Board, time):
         """Render the lose screen.
             Plays explosion animation (once), draws final board with mines
             revealed, and shows defeat message.
@@ -471,8 +477,13 @@ class UIEngine:
 
         surface.fill(START_BG_COLOR)
         font = pygame.font.Font(None, 56)
-        UIEngine.DisplayEndGameBoard(surface, board);
-        text = font.render("You Lose!", True, RED)
+        UIEngine.DisplayEndGameBoard(surface, board)
+        if board.game_mode == GameMode.SINGLE_PLAYER:
+            text = font.render("You Lose!", True, RED)
+        elif board.game_mode == GameMode.MULTIPLAYER:
+            text = font.render("You Lose, AI beat you!", True, RED)
+        elif board.game_mode == GameMode.AUTO_SOLVER:
+            text = font.render("The AI hit a mine!", True, RED)
         text_rect = text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2  + 150))
         mid_font = pygame.font.SysFont(None, 40)
         time_display = mid_font.render(f"Time: {time} second(s)", True, BLACK)
@@ -555,8 +566,8 @@ class UIEngine:
 
         UIEngine._DrawAgent(surface, prev_coords[0], prev_coords[1])
         UIEngine.agent_pos = prev_coords
-        print(done)
-        print(prev_coords)
+        # print(done)
+        # print(prev_coords)
         return done
 
     def UpdateGameModeButton(board):

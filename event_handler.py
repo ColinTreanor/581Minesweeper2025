@@ -97,10 +97,11 @@ class EventHandler:
                                 game.state = GameState.PLAYING 
                                 # For auto-solver mode, make the first move to start the board generation
                                 if game.game_mode == GameMode.AUTO_SOLVER:
+                                    print('game mode autosolver')
                                     # Make an initial random move to generate the board
                                     import random
                                     first_move = (random.randint(0, game.board_size-1), random.randint(0, game.board_size-1))
-                                    game.move_agent(first_move)
+                                    game.RevealSpace(first_move)
                             case ButtonClass.ButtonTypes.GAME_MODE_TOGGLE:
                                 EventHandler._CycleGameMode(game)
                         break
@@ -120,6 +121,7 @@ class EventHandler:
                         r = gy // CELL_SIZE
                         space_revealed = game.RevealSpace((r, c))
                         if space_revealed:
+                            game.ai_turn = True
                             # Map bot difficulty to numeric values for Agent class
                             
                             difficulty_map = {
@@ -132,7 +134,7 @@ class EventHandler:
                             if agent_move:  # Check if agent found a valid move
                                 x_agent, y_agent = agent_move
                                 game.move_agent((x_agent, y_agent))
-                                #game.RevealSpace((x_agent, y_agent))
+                                # game.RevealSpace((x_agent, y_agent))
 
 
                 if (game.state == GameState.PLAYING):
@@ -237,7 +239,7 @@ class EventHandler:
             # Make the move and update agent position if it exists
             if hasattr(game, 'move_agent'):
                 game.move_agent((x_agent, y_agent))
-            game.RevealSpace((x_agent, y_agent))
+            # game.RevealSpace((x_agent, y_agent))
             return True
         
         return False
