@@ -310,6 +310,7 @@ class Board:
                 else:
                     if self.ai_turn:
                         self.state = GameState.WIN_SCREEN
+                        winner.play()
                     else:
                         self.state = GameState.LOSE_SCREEN
                         explosion.play() # sound when user clicks on a bomb tile
@@ -333,8 +334,10 @@ class Board:
                     else:
                         if self.ai_turn:
                             self.state = GameState.LOSE_SCREEN
+                            explosion.play()
                         else:
                             self.state = GameState.WIN_SCREEN
+                            winner.play()
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                     winner.play() # this plays with the "you win" message 
                     return True  # Return True indicating successful reveal
