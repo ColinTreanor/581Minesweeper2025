@@ -112,11 +112,16 @@ class Board:
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
         self.actual_board: list = [[BoardPiece.ZERO for _ in range(self.board_size)] for _ in range(self.board_size)]
         self.auto_solve_timer: int = 0  # Timer for auto-solve mode delays 
-        self.auto_solve_delay: int = 1  # Delay in milliseconds between AI moves 
+        self.auto_solve_delay: int = 1 
         self.prev_click = None
         # Game mode settings
         self.game_mode: GameMode = GameMode.SINGLE_PLAYER
         self.agent_difficulty: AgentDifficulty = AgentDifficulty.EASY
+        
+        # Reset the UI dropdown to match the reset difficulty
+        import button as ButtonClass
+        if ButtonClass.agent_difficulty_dropdown is not None:
+            ButtonClass.agent_difficulty_dropdown.selected_option = AgentDifficulty.EASY.value
 
     def CalculateDuration(self):
         if not self.board_generated:

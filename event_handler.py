@@ -77,7 +77,6 @@ class EventHandler:
                         match button.mButtonType:
                             case ButtonClass.ButtonTypes.WIN_RESTART_GAME | ButtonClass.ButtonTypes.LOSE_RESTART_GAME | ButtonClass.ButtonTypes.MIDGAME_RESTART_GAME:
                                 game.ResetBoard()
-                                #game.move_agent((0,0)) #reset agent position
                             case ButtonClass.ButtonTypes.MINE_SELECT_UP_ARROW:
                                 # only update mines if it is less than max mines value
                                 if game.mines < MAX_MINES:
