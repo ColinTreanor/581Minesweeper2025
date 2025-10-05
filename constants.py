@@ -100,3 +100,18 @@ grid_imgs = {
 
 agent_img = pygame.image.load('sprites/agent.png')
 agent_img = pygame.transform.scale(agent_img, (CELL_SIZE, CELL_SIZE))
+
+# Game Mode Constants
+from enum import Enum
+
+class GameMode(Enum):
+    """Enumeration for different game modes"""
+    SINGLE_PLAYER = "Single Player"
+    MULTIPLAYER = "Multiplayer"
+    AUTO_SOLVER = "Auto Solver"
+
+class AgentDifficulty(Enum):
+    """Enumeration for bot difficulty levels"""
+    EASY = "Easy"
+    MEDIUM = "Medium"
+    HARD = "Hard"

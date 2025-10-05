@@ -27,7 +27,7 @@ Creation Date: 9/10/2025
 
 from enum import Enum  # Python standard library for enumeration types
 import random  # Python standard library for random number generation
-from constants import MAX_MINES, MIN_MINES  # Local constants module for mine limits
+from constants import MAX_MINES, MIN_MINES, GameMode, AgentDifficulty  # Local constants module for mine limits
 from pygame import time  # Pygame library for game timing functionality
 import pygame
 
@@ -110,7 +110,7 @@ class Board:
 
     def __init__(self):
         self.ResetBoard() # set board to default values
-        self.prev_click = [0, 0]
+        self.prev_click = None
 
     def ResetBoard(self):
         # sets b
@@ -121,8 +121,24 @@ class Board:
         self.StartTime = 0
         self.board_generated: bool = False
         self.visible_board: list = [[BoardPiece.UNKNOWN for _ in range(self.board_size)] for _ in range(self.board_size)]
-
         self.actual_board: list = [[BoardPiece.ZERO for _ in range(self.board_size)] for _ in range(self.board_size)]
+        self.auto_solve_timer: int = 0  # Timer for auto-solve mode delays 
+        self.auto_solve_delay: int = 1 
+        self.prev_click = None
+        # Game mode settings
+        self.game_mode: GameMode = GameMode.SINGLE_PLAYER
+        self.agent_difficulty: AgentDifficulty = AgentDifficulty.EASY
+        self.ai_turn = False
+        
+        # Reset the UI dropdown to match the reset difficulty
+        import button as ButtonClass
+        if ButtonClass.agent_difficulty_dropdown is not None:
+            ButtonClass.agent_difficulty_dropdown.selected_option = AgentDifficulty.EASY.value
+        
+        # Reset agent position in UI
+        import UI_engine
+        UI_engine.UIEngine.agent_pos = [30, 30]
+        UI_engine.UIEngine.explosion_played = False
 
     def CalculateDuration(self):
         if not self.board_generated:
@@ -288,8 +304,15 @@ class Board:
                 # Player hit a mine - game over
                 self.visible_board[spaceIdx[0]][spaceIdx[1]] = BoardPiece.MINE  # Show the mine
                 self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                self.state = GameState.LOSE_SCREEN  # Set game state to loss
-                explosion.play() # sound when user clicks on a bomb tile
+                if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
+                    self.state = GameState.LOSE_SCREEN  # Set game state to loss
+                    explosion.play() # sound when user clicks on a bomb tile
+                else:
+                    if self.ai_turn:
+                        self.state = GameState.WIN_SCREEN
+                    else:
+                        self.state = GameState.LOSE_SCREEN
+                        explosion.play() # sound when user clicks on a bomb tile
                 return True  # Return True indicating successful reveal (even though it's a mine)
                 
             case BoardPiece.ZERO:
@@ -305,7 +328,13 @@ class Board:
 
                 # Check if revealing this area completed the game
                 if(self.CheckWin()):
-                    self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
+                        self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    else:
+                        if self.ai_turn:
+                            self.state = GameState.LOSE_SCREEN
+                        else:
+                            self.state = GameState.WIN_SCREEN
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                     winner.play() # this plays with the "you win" message 
                     return True  # Return True indicating successful reveal
@@ -317,7 +346,13 @@ class Board:
 
                 # Check if this revelation completed the game
                 if(self.CheckWin()):
-                    self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
+                        self.state = GameState.WIN_SCREEN  # Set game state to victory
+                    else:
+                        if self.ai_turn:
+                            self.state = GameState.LOSE_SCREEN
+                        else:
+                            self.state = GameState.WIN_SCREEN
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
                     winner.play() # plays when user wins the games
                     return True  # Return True indicating successful reveal
@@ -383,3 +418,26 @@ class Board:
     def move_agent(self, rc):
         r, c = rc
         self.prev_click = [r, c]
+
+    # def UpdateAutoSolve(self): 
+    #     """Handle auto-solve mode AI moves with timing. 
+         
+    #     Returns: 
+    #         bool: True if an AI move was made, False otherwise 
+    #     """         
+    #     if (self.state == GameState.PLAYING and  
+    #         self.active_agent and  
+    #         self.game_mode == GameMode.AUTO_SOLVER): 
+    #         print("Auto-solve mode active")
+    #         current_time = time.get_ticks() 
+    #         if current_time - self.auto_solve_timer >= self.auto_solve_delay: 
+    #             # Import here to avoid circular import 
+    #             import agents 
+
+    #             agent_move = agents.Agent(self.agent_difficulty).run_agent(self)
+    #             if agent_move:  # Check if agent found a valid move
+    #                 x_agent, y_agent = agent_move
+    #                 self.move_agent((x_agent, y_agent)) 
+    #                 self.auto_solve_timer = current_time 
+    #                 return True 
+    #     return False

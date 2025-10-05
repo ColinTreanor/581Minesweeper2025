@@ -71,10 +71,20 @@ def main():
 
     #make our classes
     Game = Board()
+    
+    # Auto-solver timing variables
+    last_auto_move_time = 0
+    auto_move_delay = 1000  # Delay between auto moves in milliseconds (1 second)
 
     while True:     
         for event in pygame.event.get():
             EventHandler.HandleEvent(event, Game)
+
+        # Handle auto-solver with timing control
+        current_time = pygame.time.get_ticks()
+        if current_time - last_auto_move_time > auto_move_delay:
+            if EventHandler.HandleAutoSolver(Game):
+                last_auto_move_time = current_time
 
         UIEngine.UpdateDisplay(DISPLAYSURF, Game, time=Game.CalculateDuration()) #need time calculation
         
