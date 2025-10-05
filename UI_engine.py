@@ -26,8 +26,6 @@ Creation Date: 9/3/2025
 """
 
 
-#TODO Reset agent pos on a new game
-
 from board import *
 import pygame
 import button as ButtonClass
@@ -335,6 +333,10 @@ class UIEngine:
         '''
         UIEngine.explosion_played = False
         surface.fill(START_BG_COLOR)
+        
+        # Reset agent position if board hasn't been generated yet (new game)
+        if not board.board_generated:
+            UIEngine.agent_pos = [30, 30]
 
         # sets font size, big medium and normal
         font = pygame.font.SysFont("fonts/Handjet-Regular.ttf", 24)  # sets font to size 24

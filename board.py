@@ -122,6 +122,11 @@ class Board:
         import button as ButtonClass
         if ButtonClass.agent_difficulty_dropdown is not None:
             ButtonClass.agent_difficulty_dropdown.selected_option = AgentDifficulty.EASY.value
+        
+        # Reset agent position in UI
+        import UI_engine
+        UI_engine.UIEngine.agent_pos = [30, 30]
+        UI_engine.UIEngine.explosion_played = False
 
     def CalculateDuration(self):
         if not self.board_generated:
