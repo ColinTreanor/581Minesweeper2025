@@ -442,11 +442,11 @@ class UIEngine:
         UIEngine.DisplayEndGameBoard(surface, board)
         WinFont = pygame.font.SysFont(None, 56)
         if board.game_mode == GameMode.SINGLE_PLAYER:
-            WinText = "You Won!"
+            WinText = "    You Won!    "
         elif board.game_mode == GameMode.MULTIPLAYER:
             WinText = "You Won, AI lost!"
         elif board.game_mode == GameMode.AUTO_SOLVER:
-            WinText = "Autosolved!"
+            WinText = "   Autosolved!   "
         WinTextSurface = WinFont.render(WinText, False, GREEN)
         WinTextSize = WinFont.size(WinText)
         mid_font = pygame.font.SysFont(None, 40)
@@ -454,7 +454,7 @@ class UIEngine:
         time_size = mid_font.size(f"Time: {time} second(s)")
         surface.blit(time_display, (SCREEN_WIDTH / 2 - time_size[0] / 2, SCREEN_HEIGHT / 2 + 200))
         surface.blit(WinTextSurface,
-                     (SCREEN_WIDTH / 2 - WinTextSize[0] / 2, SCREEN_HEIGHT / 2 + 200 - WinTextSize[0] / 2))
+                     (SCREEN_WIDTH / 2 - WinTextSize[0] / 2, SCREEN_HEIGHT / 2 + 300 - WinTextSize[0] / 2))
         """ emoji_rect = emoji_win.get_rect()
         emoji_rect.midleft = (SCREEN_WIDTH - 60, SCREEN_HEIGHT - 40)
         surface.blit(emoji_win, emoji_rect) """
