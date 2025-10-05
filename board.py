@@ -350,13 +350,15 @@ class Board:
                 if(self.CheckWin()):
                     if self.game_mode == GameMode.SINGLE_PLAYER or self.game_mode == GameMode.AUTO_SOLVER:
                         self.state = GameState.WIN_SCREEN  # Set game state to victory
+                        winner.play()
                     else:
                         if self.ai_turn:
                             self.state = GameState.LOSE_SCREEN
+                            explosion.play()
                         else:
                             self.state = GameState.WIN_SCREEN
+                            winner.play()
                     self.StartTime = time.get_ticks() - self.StartTime  # Calculate final game time
-                    winner.play() # plays when user wins the games
                     return True  # Return True indicating successful reveal
                 ding.play() # Sound effect for selecting safe tile / number tile 
                 return True  # Return True indicating successful reveal
